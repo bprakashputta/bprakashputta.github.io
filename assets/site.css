@@ -101,8 +101,8 @@ ul.clean li { margin: 6px 0; }
 .note { border-left: 3px solid var(--accent); background: var(--surface-2); padding: 12px 16px; border-radius: 0 8px 8px 0; color: var(--muted); margin: 18px 0; }
 
 figure { margin: 22px 0; }
-figure .frame { background: #ffffff; border: 1px solid var(--border); border-radius: 12px; padding: 14px; overflow-x: auto; }
-figure img { display: block; width: 100%; height: auto; min-width: 520px; }
+figure .frame { display: block; background: #ffffff; border: 1px solid var(--border); border-radius: 12px; padding: 14px; overflow-x: auto; cursor: zoom-in; }
+figure img { display: block; width: 100%; max-width: 640px; max-height: 720px; object-fit: contain; height: auto; margin: 0 auto; }
 figcaption { font-size: 14px; color: var(--muted); margin-top: 8px; }
 
 table { width: 100%; border-collapse: collapse; font-size: 15px; margin: 14px 0; }

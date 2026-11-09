@@ -51,8 +51,8 @@
         <li><b>Human in control:</b> shortlists go through approve/reject. Nothing is ever sent automatically.</li>
       </ul>
       <figure>
-        <div class="frame"><img src="../assets/placewise/architecture.svg" alt="Placewise architecture: Next.js portal, FastAPI API, worker with Postgres job queue, Postgres with pgvector, n8n, Claude and Voyage AI"></div>
-        <figcaption>System architecture. Everything runs in Docker Compose: portal, API, workers, Postgres + pgvector and n8n.</figcaption>
+        <a class="frame" href="../assets/placewise/architecture.svg" title="Open full size"><img src="../assets/placewise/architecture.svg" alt="Placewise architecture: Next.js portal, FastAPI API, worker with Postgres job queue, Postgres with pgvector, n8n, Claude and Voyage AI"></a>
+        <figcaption>System architecture (click to open full size). Everything runs in Docker Compose: portal, API, workers, Postgres + pgvector and n8n.</figcaption>
       </figure>
     </section>
 
@@ -66,7 +66,7 @@
         <li>Every model call is logged with tokens, latency and cost. A daily spend cap pauses work rather than failing it.</li>
       </ul>
       <figure>
-        <div class="frame"><img src="../assets/placewise/ingest-graph.svg" alt="LangGraph ingest pipeline: dedupe, parse and screen, extract, validate, embed"></div>
+        <a class="frame" href="../assets/placewise/ingest-graph.svg" title="Open full size"><img src="../assets/placewise/ingest-graph.svg" alt="LangGraph ingest pipeline: dedupe, parse and screen, extract, validate, embed"></a>
         <figcaption>The LangGraph ingest pipeline for one résumé.</figcaption>
       </figure>
       <p>On the evaluation set, unusable and adversarial files were caught at <b>100% precision and recall</b>, and flawed-résumé precision rose from 57% to 94% after moving extraction from a small model to Claude Sonnet, at about $0.02 per résumé.</p>
@@ -87,7 +87,7 @@
       </div>
       <p>Measured against an answer key the API never sees, on a 597-résumé test set with 15 job orders, including scanned, corrupt, duplicate and prompt-injection files.</p>
       <figure>
-        <div class="frame"><img src="../assets/placewise/rag-graph.svg" alt="RAG graph: route the question, retrieve with filters and hybrid search, rerank, answer with citations"></div>
+        <a class="frame" href="../assets/placewise/rag-graph.svg" title="Open full size"><img src="../assets/placewise/rag-graph.svg" alt="RAG graph: route the question, retrieve with filters and hybrid search, rerank, answer with citations"></a>
         <figcaption>The Ask (RAG) graph: route, retrieve, rerank, then answer with citations.</figcaption>
       </figure>
     </section>
