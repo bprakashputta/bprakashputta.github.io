@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bhanu Prakash Putta · AI Engineer</title>
+  <meta name="description" content="AI Engineer building LLM applications, AI agents and RAG systems, with the evaluation to prove they work. Lead AI Engineer at Effulgent.">
+  <meta property="og:title" content="Bhanu Prakash Putta · AI Engineer">
+  <meta property="og:description" content="LLM applications, AI agents and RAG systems, measured and deployed.">
+  <meta property="og:type" content="website">
+  <link rel="stylesheet" href="assets/site.css">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231f5f4a'/%3E%3Ctext x='32' y='42' font-family='Arial' font-weight='700' font-size='28' text-anchor='middle' fill='white'%3EBP%3C/text%3E%3C/svg%3E">
+</head>
+<body>
+  <header class="site">
+    <div class="wrap">
+      <a class="brand" href="./">Bhanu Prakash Putta</a>
+      <nav>
+        <a href="#work">Work</a>
+        <a href="#services" class="hide-sm">Services</a>
+        <a href="#experience" class="hide-sm">Experience</a>
+        <a href="#contact">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="wrap hero">
+      <p class="eyebrow">AI Engineer</p>
+      <h1>I build AI agents, RAG systems and LLM apps that work on real data, and I measure them to prove it.</h1>
+      <p class="lede">Lead AI Engineer at <a href="https://www.effulgenttech.com">Effulgent</a>, a member of the OpenAI, Anthropic and Google Cloud partner programs. 6+ years of Python and software engineering, M.S. in Applied Data Science.</p>
+      <div class="actions">
+        <a class="btn primary" href="#work">See the work</a>
+        <a class="btn" href="https://www.upwork.com/freelancers/~01ba1048297cfaf8b2">Hire on Upwork</a>
+        <a class="btn" href="https://github.com/bprakashputta">GitHub</a>
+      </div>
+    </div>
+
+    <section id="work">
+      <div class="wrap">
+        <h2>Selected work</h2>
+        <p class="section-sub">Each project has its code, design notes and numbers.</p>
+        <div class="cards">
+
+          <article class="card">
+            <p class="kicker">AI recruiting layer · LangGraph · Claude · hybrid RAG</p>
+            <h3>Placewise</h3>
+            <p>Turns résumés and messy job notes into evidence-backed candidate shortlists for an architecture, engineering and construction staffing workflow, on top of the recruiter's existing ATS.</p>
+            <div class="metrics">
+              <div class="metric"><b>48% → 89%</b><span>recall@10 after filters, hybrid search, rerank</span></div>
+              <div class="metric"><b>98%</b><span>precision@10</span></div>
+              <div class="metric"><b>97.6%</b><span>submit precision, evidence-checked</span></div>
+              <div class="metric"><b>$0.02</b><span>LLM cost per résumé</span></div>
+            </div>
+            <ul class="tags"><li>LangGraph</li><li>Claude</li><li>Voyage AI</li><li>pgvector</li><li>FastAPI</li><li>Next.js</li><li>GCP</li></ul>
+            <p style="margin-top:14px"><a class="more" href="work/placewise.html">Read the case study →</a></p>
+          </article>
+
+          <article class="card">
+            <p class="kicker">Open source · Model Context Protocol · real-time market data</p>
+            <h3>predmarket-mcp</h3>
+            <p>An MCP server that gives Claude and other AI agents live Kalshi and Polymarket data: search, quotes, order books, trades, price history and cross-venue comparison on one normalized data model.</p>
+            <div class="metrics">
+              <div class="metric"><b>6</b><span>read-only agent tools</span></div>
+              <div class="metric"><b>2 venues</b><span>one YES-probability data model</span></div>
+              <div class="metric"><b>0 keys</b><span>public endpoints only</span></div>
+              <div class="metric"><b>CI</b><span>tests on Python 3.12 + 3.13</span></div>
+            </div>
+            <ul class="tags"><li>MCP</li><li>Python</li><li>asyncio</li><li>httpx</li><li>pydantic</li></ul>
+            <p style="margin-top:14px"><a class="more" href="work/predmarket-mcp.html">Read the case study →</a></p>
+          </article>
+
+          <div class="grid-2">
+            <article class="card">
+              <p class="kicker">NLP · document extraction</p>
+              <h3>NER Document Extractor</h3>
+              <p>PDF → text → a custom spaCy NER model that pulls sales, address and tax-parcel data out of legal documents, with per-entity precision, recall and F1.</p>
+              <div class="metrics"><div class="metric"><b>92%</b><span>accuracy, 500+ documents</span></div></div>
+              <a class="more" href="https://github.com/bprakashputta/NER-Document-Extractor">View on GitHub →</a>
+            </article>
+            <article class="card">
+              <p class="kicker">Algorithmic trading competition</p>
+              <h3>IMC Prosperity 2025</h3>
+              <p>An entry in IMC's global trading competition: order-book strategies for three products, including fair-value market making and position-capped sizing, using only numpy and pandas per the rules.</p>
+              <a class="more" href="https://github.com/bprakashputta/order-of-the-trade-imcprosperity2025">View on GitHub →</a>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="services">
+      <div class="wrap">
+        <h2>What I can build for you</h2>
+        <p class="section-sub">Projects are delivered through <a href="https://www.effulgenttech.com">Effulgent</a>, with clear scope, milestones and code you own.</p>
+        <div class="grid-2">
+          <div class="card">
+            <h3>AI agents and automation</h3>
+            <ul class="clean">
+              <li>LangGraph agents with tools, memory and human approval steps</li>
+              <li>MCP servers that connect agents to your data and APIs</li>
+              <li>n8n and custom workflow automation</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>RAG and document intelligence</h3>
+            <ul class="clean">
+              <li>Chat over your documents, with answers that cite sources</li>
+              <li>Hybrid search, reranking and metadata filters</li>
+              <li>Structured extraction from PDFs, résumés and contracts</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>LLM integration and evaluation</h3>
+            <ul class="clean">
+              <li>Claude, OpenAI and Vertex AI, with structured outputs and guardrails</li>
+              <li>Test sets, LLM-as-judge and regression checks</li>
+              <li>Cost and latency tuning for existing LLM apps</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Production engineering</h3>
+            <ul class="clean">
+              <li>FastAPI backends, Postgres/pgvector, job queues</li>
+              <li>Docker, CI/CD with rollback, monitoring and spend caps</li>
+              <li>Deployment on AWS, GCP or Azure</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="experience">
+      <div class="wrap">
+        <h2>Experience</h2>
+        <p class="section-sub">Client and company work. The code isn't public, but I'm happy to walk through the design.</p>
+        <div class="table-scroll">
+          <table>
+            <thead><tr><th>Role</th><th>Highlights</th></tr></thead>
+            <tbody>
+              <tr><td><b>Lead AI Engineer</b><br>Effulgent · 2026–now</td><td>LLM applications, RAG systems and AI agents for Effulgent's AI services; client engagement and delivery.</td></tr>
+              <tr><td><b>Founding Software Engineer</b><br>Elastics AI · 2025–26</td><td>Real-time platform unifying Polymarket and Kalshi feeds at 40M+ messages/hour (Kafka, WebSockets, Protobuf). MCP servers giving AI agents live data. Shipped the MVP on Azure with Terraform.</td></tr>
+              <tr><td><b>AI Engineer</b><br>Reality AI Lab · 2024</td><td>Production RAG pipeline (LangChain, LlamaIndex, Vertex AI). LLM-as-judge framework that raised agreement with human reviewers from 60% to 90%.</td></tr>
+              <tr><td><b>Graduate Research Assistant</b><br>Clarkson University · 2023–25</td><td>Legal-document extraction pipeline and custom NER (92% accuracy). Published research on edge AI for smart manufacturing.</td></tr>
+              <tr><td><b>Software Engineer</b><br>Thrillophilia, Merkle Sokrati · 2021–22</td><td>Channel-manager API integration for a travel platform; a lead-ingestion pipeline syncing 1M+ records in under 5 minutes; serverless services on AWS.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="contact">
+      <div class="wrap">
+        <h2>Have an AI project in mind?</h2>
+        <p class="section-sub">Tell me what you're trying to build, and I'll suggest the simplest approach that works.</p>
+        <div class="actions">
+          <a class="btn primary" href="https://www.upwork.com/freelancers/~01ba1048297cfaf8b2">Message me on Upwork</a>
+          <a class="btn" href="https://www.linkedin.com/in/bprakashputta/">LinkedIn</a>
+          <a class="btn" href="https://github.com/bprakashputta">GitHub</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <span>© 2026 Bhanu Prakash Putta · Dallas, TX</span>
+      <span>Lead AI Engineer at <a href="https://www.effulgenttech.com">Effulgent</a></span>
+    </div>
+  </footer>
+</body>
+</html>

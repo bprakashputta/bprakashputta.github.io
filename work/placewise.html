@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Placewise · AI recruiting layer · Bhanu Prakash Putta</title>
+  <meta name="description" content="Placewise: an AI layer for A/E/C recruiting. LangGraph ingest, Claude structured extraction, hybrid retrieval with rerank, and evidence-checked candidate matching.">
+  <link rel="stylesheet" href="../assets/site.css">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231f5f4a'/%3E%3Ctext x='32' y='42' font-family='Arial' font-weight='700' font-size='28' text-anchor='middle' fill='white'%3EBP%3C/text%3E%3C/svg%3E">
+</head>
+<body>
+  <header class="site">
+    <div class="wrap">
+      <a class="brand" href="../">Bhanu Prakash Putta</a>
+      <nav>
+        <a href="../#work">Work</a>
+        <a href="../#services" class="hide-sm">Services</a>
+        <a href="../#contact">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <p class="crumb"><a href="../#work">Work</a> / Placewise</p>
+    <div class="case-hero">
+      <p class="eyebrow">Case study · AI recruiting</p>
+      <h1>Placewise: an AI layer that turns résumés into evidence-backed shortlists</h1>
+      <p class="lede">Recruiters at architecture, engineering and construction staffing firms spend hours reading résumés against vague job notes. Placewise sits on top of their existing ATS and does the first pass: it parses every résumé, finds the right candidates for a role, and backs every recommendation with the résumé line that proves it.</p>
+      <div class="actions">
+        <a class="btn primary" href="https://github.com/bprakashputta/placewise">Code on GitHub</a>
+        <a class="btn" href="https://placewise.bprakashputta.workers.dev">Live demo (login on request)</a>
+      </div>
+    </div>
+
+    <div class="metrics">
+      <div class="metric"><b>48% → 89%</b><span>recall@10</span></div>
+      <div class="metric"><b>98%</b><span>precision@10</span></div>
+      <div class="metric"><b>97.6%</b><span>submit precision</span></div>
+      <div class="metric"><b>$0.02</b><span>per résumé ingested</span></div>
+      <div class="metric"><b>~300</b><span>automated tests</span></div>
+    </div>
+
+    <section>
+      <h2>What it does</h2>
+      <ul class="clean">
+        <li><b>Intake:</b> PDF, DOCX and text résumés from an upload page, a watched folder or an n8n webhook, handled by a Postgres job queue and workers.</li>
+        <li><b>Understanding:</b> a LangGraph pipeline per résumé (dedupe → parse and screen → Claude structured extraction → code validation → embeddings).</li>
+        <li><b>Job orders:</b> messy recruiter notes become a structured job order, and the system asks clarifying questions when something is missing.</li>
+        <li><b>Matching:</b> hard filters (license, state, years) plus hybrid search and reranking find candidates, and each one is scored with quoted evidence.</li>
+        <li><b>Ask:</b> a conversational assistant answers questions about candidates and roles, and every answer cites résumé lines.</li>
+        <li><b>Human in control:</b> shortlists go through approve/reject. Nothing is ever sent automatically.</li>
+      </ul>
+      <figure>
+        <div class="frame"><img src="../assets/placewise/architecture.svg" alt="Placewise architecture: Next.js portal, FastAPI API, worker with Postgres job queue, Postgres with pgvector, n8n, Claude and Voyage AI"></div>
+        <figcaption>System architecture. Everything runs in Docker Compose: portal, API, workers, Postgres + pgvector and n8n.</figcaption>
+      </figure>
+    </section>
+
+    <section>
+      <h2>Ingest: making messy résumés trustworthy</h2>
+      <p>Real résumé folders are full of scans, two-column layouts, duplicates, corrupt files and occasionally hidden text written to manipulate an AI screener. The ingest graph treats every file as untrusted:</p>
+      <ul class="clean">
+        <li>Hidden and injected text is detected and stripped before any model sees it.</li>
+        <li>Claude returns a structured profile, then <b>code validates the facts</b> (dates, years of experience, license claims) instead of trusting the model.</li>
+        <li>Extraction results are cached on the cleaned text, so re-processing a file costs nothing.</li>
+        <li>Every model call is logged with tokens, latency and cost. A daily spend cap pauses work rather than failing it.</li>
+      </ul>
+      <figure>
+        <div class="frame"><img src="../assets/placewise/ingest-graph.svg" alt="LangGraph ingest pipeline: dedupe, parse and screen, extract, validate, embed"></div>
+        <figcaption>The LangGraph ingest pipeline for one résumé.</figcaption>
+      </figure>
+      <p>On the evaluation set, unusable and adversarial files were caught at <b>100% precision and recall</b>, and flawed-résumé precision rose from 57% to 94% after moving extraction from a small model to Claude Sonnet, at about $0.02 per résumé.</p>
+    </section>
+
+    <section>
+      <h2>Retrieval: from 48% to 89% recall</h2>
+      <p>Pure vector search missed most qualified candidates, because job requirements like "PE licensed in Texas, 10+ years" are hard constraints, not semantic similarity. Each layer was added only when the evaluation showed it helped:</p>
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th>Retrieval setup</th><th class="num">recall@10</th><th class="num">precision@10</th><th class="num">MRR</th></tr></thead>
+          <tbody>
+            <tr><td>Vector search only</td><td class="num">48%</td><td class="num">–</td><td class="num">–</td></tr>
+            <tr><td>+ hard filters</td><td class="num">84%</td><td class="num">–</td><td class="num">–</td></tr>
+            <tr><td>+ hybrid keyword search + rerank</td><td class="num"><b>89%</b></td><td class="num"><b>98%</b></td><td class="num"><b>1.00</b></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>Measured against an answer key the API never sees, on a 597-résumé test set with 15 job orders, including scanned, corrupt, duplicate and prompt-injection files.</p>
+      <figure>
+        <div class="frame"><img src="../assets/placewise/rag-graph.svg" alt="RAG graph: route the question, retrieve with filters and hybrid search, rerank, answer with citations"></div>
+        <figcaption>The Ask (RAG) graph: route, retrieve, rerank, then answer with citations.</figcaption>
+      </figure>
+    </section>
+
+    <section>
+      <h2>Matching you can audit</h2>
+      <p>For each candidate, the model must quote the résumé line that supports each requirement. Code checks that every quote really exists in the résumé, and code (not the model) computes the final score. Scoring is blind: names, addresses and graduation years are removed first. Result: <b>97.6% submit precision</b>, and a recruiter can see exactly why each person made the list.</p>
+    </section>
+
+    <section>
+      <h2>Production engineering</h2>
+      <div class="grid-2">
+        <div>
+          <h3>Deployment</h3>
+          <ul class="clean">
+            <li>Google Cloud VM running the Docker Compose stack behind Caddy and Cloudflare</li>
+            <li>GitHub Actions: CI on every PR, auto-deploy from <code>main</code>, verify and roll back automatically</li>
+            <li>Uptime and budget alerts, and a public spend cap</li>
+          </ul>
+        </div>
+        <div>
+          <h3>Cost and quality controls</h3>
+          <ul class="clean">
+            <li>Prompt caching and a Postgres response cache (repeat questions cost $0)</li>
+            <li>LangSmith tracing and versioned prompts</li>
+            <li>21 architecture decision records documenting each trade-off</li>
+          </ul>
+        </div>
+      </div>
+      <p class="note">Some of the decisions recorded in the repo: code validates LLM facts (ADR 013); own retrieval SQL instead of a generic retriever (ADR 017); a Postgres <code>SKIP LOCKED</code> job queue instead of a separate broker (ADR 010); auto-deploy with rollback (ADR 020); Claude cost caching (ADR 021).</p>
+    </section>
+
+    <section>
+      <h2>Stack</h2>
+      <ul class="tags"><li>Python</li><li>LangGraph</li><li>LangChain</li><li>LangSmith</li><li>Claude</li><li>Voyage AI</li><li>Postgres</li><li>pgvector</li><li>FastAPI</li><li>Next.js</li><li>n8n</li><li>Docker</li><li>GitHub Actions</li><li>Google Cloud</li><li>Cloudflare</li></ul>
+    </section>
+
+    <section>
+      <h2>Want something like this for your data?</h2>
+      <p class="section-sub">The same pattern (untrusted documents in, validated structured data, filtered hybrid retrieval, evidence-backed answers) fits contracts, support tickets, research papers and more.</p>
+      <div class="actions">
+        <a class="btn primary" href="https://www.upwork.com/freelancers/~01ba1048297cfaf8b2">Discuss a project</a>
+        <a class="btn" href="predmarket-mcp.html">Next case study →</a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <span>© 2026 Bhanu Prakash Putta</span>
+      <span><a href="../">Home</a></span>
+    </div>
+  </footer>
+</body>
+</html>
