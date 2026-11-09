@@ -160,8 +160,8 @@ latency_p95_ms     1,148 → 1,071 ms      x0.93 [x0.86, x1.09]  pass</code></pr
       </section>
 
       <figure class="figure-wide">
-        <a class="dg-frame" href="https://github.com/bprakashputta/assaygate" style="display:block;padding:0;overflow:hidden;cursor:pointer"><img src="../assets/assaygate/gate.png" alt="assaygate gate report in dark theme: gate failed, 1 of 3 checks. Accuracy 0.797, down 0.060 with CI from −0.100 to −0.020; cost per item ×0.52 and p95 latency ×0.93 both pass. Cumulative curves of latency and cost per item for baseline and candidate." width="1120" height="1240" loading="lazy" style="max-height:none"></a>
-        <figcaption><span class="label">Fig. 2</span>The HTML gate report for v2 vs v1. Accuracy fails; the cost curve shows why a reviewer might have liked the change. Click to see the code.</figcaption>
+        <a class="dg-frame" href="https://github.com/bprakashputta/assaygate" style="display:block;padding:0;overflow:hidden;cursor:pointer"><img src="../assets/assaygate/gate.png" alt="assaygate gate report, styled like a CI checks page in dark theme: red status icon and &quot;Gate failed: 1 of 3 checks&quot;, then a checks list. Accuracy 0.797 fails, down 0.060 with CI from −0.100 to −0.020; cost per item ×0.52 and p95 latency ×0.93 pass. Below, interval plots per check and cumulative curves of latency and cost per item, baseline dashed grey, candidate blue." width="1120" height="1240" loading="lazy" style="max-height:none"></a>
+        <figcaption><span class="label">Fig. 2</span>The HTML gate report for v2 vs v1, laid out like a CI checks page. Accuracy fails; the cost row and curves show why a reviewer might have liked the change. Click to see the code.</figcaption>
       </figure>
 
       <section class="body">
@@ -252,8 +252,8 @@ latency_p95_ms     1,148 → 1,071 ms      x0.93 [x0.86, x1.09]  pass</code></pr
       </section>
 
       <figure class="figure-wide">
-        <a class="dg-frame" href="https://github.com/bprakashputta/assaygate" style="display:block;padding:0;overflow:hidden;cursor:pointer"><img src="../assets/assaygate/calibration.png" alt="assaygate judge calibration report: judge–human agreement 72.8% naive to 75.2% final on 400 MT-Bench test pairs, with a dot-and-interval chart of agreement for each judge variant." width="1120" height="1020" loading="lazy" style="max-height:none"></a>
-        <figcaption><span class="label">Fig. 4</span>The calibration report. Each row adds one technique; lines are 95% Wilson intervals, and they overlap, which is the “not significant” finding in picture form. Click to see the code.</figcaption>
+        <a class="dg-frame" href="https://github.com/bprakashputta/assaygate" style="display:block;padding:0;overflow:hidden;cursor:pointer"><img src="../assets/assaygate/calibration.png" alt="assaygate judge calibration report in dark theme: judge–human agreement 73% to 75% (72.8% naive, 75.2% final) on 400 MT-Bench test pairs, stat strip with kappa, swap flips and cost per item, and a dot-and-interval chart of agreement for each judge variant with the final judge in blue." width="1120" height="1020" loading="lazy" style="max-height:none"></a>
+        <figcaption><span class="label">Fig. 4</span>The calibration report. Each row adds one technique (the final judge in blue); lines are 95% Wilson intervals, and they overlap, which is the “not significant” finding in picture form. Click to see the code.</figcaption>
       </figure>
 
       <section class="body">
