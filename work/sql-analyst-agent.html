@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>sql-analyst-agent — Case study — Bhanu Prakash Putta</title>
+  <meta name="description" content="sql-analyst-agent: a LangGraph text-to-SQL agent that answers business questions, shows its SQL, charts and explains the result, and is read-only by construction. Evaluated on BIRD mini-dev.">
+  <meta property="og:title" content="sql-analyst-agent — chat with your database, safely">
+  <meta property="og:image" content="https://bprakashputta.github.io/assets/sql-analyst-agent/thumb.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap">
+  <link rel="stylesheet" href="../assets/site.css">
+  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+  <style>
+    .body table td.num { white-space: nowrap; }
+    .body table.sa-safety th:nth-child(3), .body table.sa-safety td:nth-child(3) { padding-left: 20px; padding-right: 0; }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="wrap">
+      <a class="brand" href="../"><b>Bhanu Prakash Putta</b><span class="hide-sm"> · AI Engineer</span></a>
+      <nav aria-label="Primary">
+        <a href="../#work">Work</a>
+        <a href="../#approach" class="hide-sm">Approach</a>
+        <a href="../#contact">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <header class="case-head">
+      <p class="crumb"><a href="../#work">Work</a> / 04 / sql-analyst-agent</p>
+      <h1 class="display">Chat with your database, <em>safely</em>.</h1>
+      <p class="dek">Business users want answers from the company database without waiting on an analyst. This open-source agent turns a plain-English question into SQL, shows the query it ran, charts and explains the result, and cannot change your data. It was measured on a public text-to-SQL benchmark, not on hand-picked demos.</p>
+      <div class="links">
+        <a class="btn solid" href="https://github.com/bprakashputta/sql-analyst-agent">Code on GitHub <span class="arr">→</span></a>
+        <a class="btn" href="https://github.com/bprakashputta/sql-analyst-agent/blob/main/evals/results.md">Full eval results</a>
+        <a class="btn hide-sm" href="https://github.com/bprakashputta/sql-analyst-agent/tree/main/docs/decisions">Decision records</a>
+      </div>
+    </header>
+
+    <div class="numbers">
+      <div><b>62.7<span class="to">→</span>71.8%</b><span>execution accuracy, Haiku, 400 held-out questions</span></div>
+      <div><b>87%</b><span>with Sonnet, the shipped default (100 questions)</span></div>
+      <div><b>20 / 31</b><span>retried questions rescued, 0 broken</span></div>
+      <div><b>0</b><span>writes executed from 25 hostile prompts</span></div>
+    </div>
+
+    <div class="case">
+      <aside class="meta" aria-label="Project facts">
+        <dl>
+          <dt>Role</dt><dd>Author and maintainer</dd>
+          <dt>Year</dt><dd>2026</dd>
+          <dt>License</dt><dd>MIT, open source</dd>
+          <dt>Evaluated on</dt><dd>BIRD mini-dev: 500 questions, 11 databases (100 dev / 400 test)</dd>
+          <dt>Stack</dt><dd>LangGraph, LangChain, Claude, FastAPI, sqlglot, SQLAlchemy, Postgres, SQLite</dd>
+        </dl>
+      </aside>
+
+      <section class="body first">
+        <h2>The problem</h2>
+        <p>Letting a language model write SQL against production data raises three worries. It might change or delete data. It might hang the database. And it might return a confident wrong number.</p>
+        <p>This agent makes the first two impossible by construction: three independent read-only layers, statement timeouts and row caps. It attacks the third by being checkable. Every answer comes with:</p>
+        <ul>
+          <li>the <b>SQL that ran</b>, the row count and the result table;</li>
+          <li>a <b>chart</b> picked by rules from the shape of the result;</li>
+          <li>a short <b>explanation</b> whose every number is matched against the rows;</li>
+          <li>the <b>assumptions</b> it made, and a step trace with tokens, cost and latency.</li>
+        </ul>
+        <p>When a question is ambiguous (“best customers: by revenue or by orders?”) it asks instead of guessing. When a question asks it to change data, it declines and says why.</p>
+      </section>
+
+      <figure class="figure-wide">
+        <div class="dg-frame">
+          <svg class="dg" viewBox="0 0 1000 456" role="img" aria-labelledby="sa-arch-t">
+            <title id="sa-arch-t">Architecture: the browser calls a FastAPI service, which runs a LangGraph agent. The agent gets a schema card from the schema layer and asks Claude for SQL. The SQL passes the sqlglot guard (layer 1), runs on a read-only connection (layer 2) against Postgres or SQLite under a SELECT-only role (layer 3). Rows go to chart rules and a number check that use no model.</title>
+            <defs><marker id="sa-a1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0,1 L9,5 L0,9 z"/></marker><marker id="sa-a1h" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah hot" d="M0,1 L9,5 L0,9 z"/></marker></defs>
+
+            <text class="g" x="20" y="58">User</text>
+            <rect class="box ext" x="20" y="80" width="180" height="76" rx="4"/>
+            <text class="t" x="36" y="112">Browser UI</text><text class="s" x="36" y="134">answer · SQL · chart</text>
+
+            <rect class="box soft" x="230" y="30" width="540" height="410" rx="6"/>
+            <text class="g" x="250" y="58">sql-analyst-agent · Docker</text>
+            <rect class="box" x="250" y="80" width="200" height="76" rx="4"/>
+            <text class="t" x="266" y="112">FastAPI</text><text class="s" x="266" y="134">JSON logs · /ready</text>
+            <rect class="box" x="490" y="80" width="260" height="76" rx="4"/>
+            <text class="t" x="506" y="112">LangGraph agent</text><text class="s" x="506" y="134">retry · clarify · decline</text>
+
+            <rect class="box" x="250" y="210" width="200" height="76" rx="4"/>
+            <text class="t" x="266" y="242">Schema layer</text><text class="s" x="266" y="264">FKs · samples · values</text>
+            <rect class="box" x="490" y="210" width="260" height="76" rx="4"/>
+            <text class="n" x="506" y="230">LAYER 1</text><text class="t" x="506" y="252">SQL guard</text><text class="s" x="506" y="272">sqlglot · one SELECT · LIMIT</text>
+
+            <rect class="box" x="250" y="344" width="200" height="76" rx="4"/>
+            <text class="t" x="266" y="376">Chart + number check</text><text class="s" x="266" y="398">rules · no model</text>
+            <rect class="box" x="490" y="344" width="260" height="76" rx="4"/>
+            <text class="n" x="506" y="364">LAYER 2</text><text class="t" x="506" y="386">Read-only connection</text><text class="s" x="506" y="406">READ ONLY txn · timeout</text>
+
+            <text class="g" x="800" y="58">Services</text>
+            <rect class="box hot" x="800" y="80" width="180" height="76" rx="4"/>
+            <text class="t" x="816" y="112">Anthropic Claude</text><text class="s" x="816" y="134">Sonnet · Haiku</text>
+            <rect class="box ext" x="800" y="210" width="180" height="76" rx="4"/>
+            <text class="t" x="816" y="242">Spend ledger</text><text class="s" x="816" y="264">hard $ cap · cache</text>
+            <rect class="box ext" x="800" y="344" width="180" height="76" rx="4"/>
+            <text class="n" x="816" y="364">LAYER 3</text><text class="t" x="816" y="386">Postgres / SQLite</text><text class="s" x="816" y="406">SELECT-only role</text>
+
+            <path class="e" d="M200 118 H246" marker-end="url(#sa-a1)"/><text class="el" x="203" y="110">/ask</text>
+            <path class="e" d="M450 118 H486" marker-end="url(#sa-a1)"/>
+            <path class="e hot" d="M750 118 H796" marker-end="url(#sa-a1h)"/>
+            <path class="e dash" d="M890 156 V206" marker-end="url(#sa-a1)"/><text class="el" x="898" y="186">cost logged</text>
+            <path class="e" d="M450 248 H470 V134 H486" marker-end="url(#sa-a1)"/>
+            <text class="el" x="258" y="200">schema card</text>
+            <path class="e" d="M600 156 V206" marker-end="url(#sa-a1)"/><text class="el" x="608" y="186">SQL</text>
+            <path class="e dash" d="M710 210 V160" marker-end="url(#sa-a1)"/><text class="el" x="660" y="186">refusal</text>
+            <path class="e" d="M600 286 V340" marker-end="url(#sa-a1)"/><text class="el" x="608" y="318">re-rendered SQL</text>
+            <path class="e" d="M750 382 H796" marker-end="url(#sa-a1)"/>
+            <path class="e" d="M490 382 H454" marker-end="url(#sa-a1)"/><text class="el" x="456" y="374">rows</text>
+          </svg>
+        </div>
+        <figcaption><span class="label">Fig. 1</span><span class="dg-hint">scroll →</span> System architecture. A model-written query must pass three read-only layers, each tested on its own with the others removed. Chart choice and the number check are plain code.</figcaption>
+      </figure>
+
+      <section class="body">
+        <h2>Read-only is a property of the system, not of the prompt</h2>
+        <p>A prompt that says “only write SELECT” is a request, not a control. So the agent never relies on it. Each layer blocks writes by itself, and each was tested with the others switched off.</p>
+        <div class="table-scroll">
+          <table class="metrics-t sa-safety">
+            <thead><tr><th>Layer</th><th class="num">Result</th><th>Test</th></tr></thead>
+            <tbody>
+              <tr><td><b>1 · SQL guard.</b> sqlglot parses the query, allows a single SELECT, walks the tree for forbidden nodes and system catalogs, sets a LIMIT, and re-renders what it checked.</td><td class="num">45 / 45</td><td>hostile SQL strings refused</td></tr>
+              <tr><td><b>2 · Read-only connection.</b> SQLite <code>mode=ro</code> + <code>query_only</code> + an authorizer; Postgres <code>BEGIN READ ONLY</code> with a statement timeout, always rolled back.</td><td class="num">37 / 37</td><td>writes refused by SQLite alone, guard bypassed; database hash unchanged</td></tr>
+              <tr><td><b>3 · Database role.</b> Postgres role <code>analyst_ro</code> with SELECT grants only, read-only by default, 5 s timeout.</td><td class="num">11 / 11</td><td>writes refused by the role, guard bypassed, real compose image</td></tr>
+              <tr class="win"><td><b>End to end.</b> 25 hostile questions and prompt injections.</td><td class="num">0</td><td>non-SELECT statements executed; all 25 declined with a reason</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Safety that blocks real work is not safety anyone keeps. The guard accepts all <b>500 / 500</b> BIRD gold queries, and re-rendering them changes <b>0 / 500</b> results, so it can safely add LIMITs. Six harmless questions that contain words like “delete”, “update” or “drop” were all answered.</p>
+        <div class="callout"><span class="label">A small change that mattered</span>The first prompt had no way to say no. Write requests came back as SQL, the guard refused them, and the agent retried three times each: 45 wasted model calls, all blocked. Adding a <code>cannot_answer</code> field to the structured output let the model decline all 25 in one call, with a reason the user can read.</div>
+      </section>
+
+      <figure class="figure-wide">
+        <a class="dg-frame" href="https://github.com/bprakashputta/sql-analyst-agent" style="display:block;padding:0;overflow:hidden"><img src="../assets/sql-analyst-agent/declined.png" alt="A prompt-injection request to drop the invoice table, declined with a reason. The SQL panel reads: no query ran." width="1600" height="760" loading="lazy" style="max-height:none"></a>
+        <figcaption><span class="label">Fig. 2</span>A prompt injection asking for <code>DROP TABLE</code>. One model call, declined with a reason, nothing sent to the database. Real run against the Postgres demo.</figcaption>
+      </figure>
+
+      <section class="body">
+        <h2>Retrying only on signals that mean “wrong”</h2>
+        <p>The agent is a small LangGraph state machine. The model writes SQL as structured JSON: a query, a clarifying question, or a reason to decline. Everything after that is code.</p>
+        <p>A retry fires only on a concrete signal: a database error, a guard refusal, a timeout, or an empty or all-NULL result. The exact error goes back to the model with the failed SQL, up to three attempts. If the model writes the same query twice for an empty result, the empty result is accepted as the answer.</p>
+      </section>
+
+      <figure class="figure-wide">
+        <div class="dg-frame">
+          <svg class="dg" viewBox="0 0 1000 340" role="img" aria-labelledby="sa-graph-t">
+            <title id="sa-graph-t">Agent graph: link schema, write SQL, guard, execute, chart, explain. Write SQL can instead end with a clarifying question or a reasoned decline. A guard refusal, database error, timeout or empty result goes to retry, which feeds the error back to write SQL, up to three attempts, after which the agent gives up.</title>
+            <defs><marker id="sa-a2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0,1 L9,5 L0,9 z"/></marker><marker id="sa-a2h" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah hot" d="M0,1 L9,5 L0,9 z"/></marker></defs>
+
+            <rect class="box ext" x="60" y="20" width="170" height="44" rx="22"/><text class="t" x="145" y="47" text-anchor="middle" style="font-size:13px">Clarify · 2–4 options</text>
+            <rect class="box ext" x="270" y="20" width="230" height="44" rx="22"/><text class="t" x="385" y="47" text-anchor="middle" style="font-size:13px">Decline · write or no data</text>
+
+            <rect class="box" x="10" y="120" width="130" height="64" rx="4"/>
+            <text class="n" x="24" y="140">01</text><text class="t" x="24" y="160">Link schema</text><text class="s" x="24" y="176">≤ 3k tokens</text>
+            <rect class="box hot" x="170" y="120" width="150" height="64" rx="4"/>
+            <text class="n" x="184" y="140">02</text><text class="t" x="184" y="160">Write SQL</text><text class="s" x="184" y="176">Claude · JSON</text>
+            <rect class="box" x="350" y="120" width="130" height="64" rx="4"/>
+            <text class="n" x="364" y="140">03</text><text class="t" x="364" y="160">Guard</text><text class="s" x="364" y="176">sqlglot</text>
+            <rect class="box" x="510" y="120" width="140" height="64" rx="4"/>
+            <text class="n" x="524" y="140">04</text><text class="t" x="524" y="160">Execute</text><text class="s" x="524" y="176">read-only · 5 s</text>
+            <rect class="box" x="680" y="120" width="120" height="64" rx="4"/>
+            <text class="n" x="694" y="140">05</text><text class="t" x="694" y="160">Chart</text><text class="s" x="694" y="176">rules</text>
+            <rect class="box hot" x="830" y="120" width="160" height="64" rx="4"/>
+            <text class="n" x="844" y="140">06</text><text class="t" x="844" y="160">Explain</text><text class="s" x="844" y="176">numbers checked</text>
+
+            <path class="e" d="M140 152 H166" marker-end="url(#sa-a2)"/>
+            <path class="e" d="M320 152 H346" marker-end="url(#sa-a2)"/>
+            <path class="e" d="M480 152 H506" marker-end="url(#sa-a2)"/>
+            <path class="e" d="M650 152 H676" marker-end="url(#sa-a2)"/>
+            <path class="e" d="M800 152 H826" marker-end="url(#sa-a2)"/>
+            <path class="e dash" d="M200 120 V68" marker-end="url(#sa-a2)"/>
+            <path class="e dash" d="M290 120 V68" marker-end="url(#sa-a2)"/>
+            <text class="el" x="910" y="212" text-anchor="middle">answer · SQL · rows</text>
+            <text class="el" x="910" y="228" text-anchor="middle">chart · assumptions</text>
+
+            <rect class="box" x="400" y="250" width="200" height="64" rx="4"/>
+            <text class="t" x="416" y="276">Retry · max 3</text><text class="s" x="416" y="296">exact error fed back</text>
+            <rect class="box ext" x="680" y="260" width="120" height="44" rx="22"/><text class="t" x="740" y="287" text-anchor="middle" style="font-size:13px">Give up</text>
+
+            <path class="e hot" d="M430 184 V246" marker-end="url(#sa-a2h)"/><text class="el" x="370" y="222">refused</text>
+            <path class="e hot" d="M570 184 V246" marker-end="url(#sa-a2h)"/><text class="el" x="578" y="222">error · timeout · empty</text>
+            <path class="e hot" d="M400 282 H245 V188" marker-end="url(#sa-a2h)"/><text class="el" x="256" y="274">failed SQL + error</text>
+            <path class="e dash" d="M600 282 H676" marker-end="url(#sa-a2)"/><text class="el" x="610" y="274">3rd fail</text>
+          </svg>
+        </div>
+        <figcaption><span class="label">Fig. 3</span><span class="dg-hint">scroll →</span> The agent graph. Only steps 02 and 06 call a model. A retry widens to the full schema when the error names a missing table or column.</figcaption>
+      </figure>
+
+      <section class="body" style="border-top:0;padding-top:0">
+        <p>On the 400 test questions, <b>31 were retried and 20 were rescued</b> (wrong on the first attempt, right at the end): 12 after an empty result, 5 after a timeout, 3 after a guard refusal. <b>None were broken.</b> Queries ending in an execution error fell from 6 to 2.</p>
+        <p>A model “review” pass over every result was built and measured, then left off. On the dev split it rescued 8 questions but broke 2, scored 69% against 70% without it, and doubled calls per question (2.1), prompt tokens and p95 latency (18.1 s vs 9.5 s).</p>
+      </section>
+
+      <section class="body">
+        <h2>Results on BIRD</h2>
+        <p>BIRD is a public text-to-SQL benchmark of realistic, messy databases. Its mini-dev set has 500 questions over 11 SQLite databases, 460 of them labelled challenging. Questions were split once with a fixed seed: 100 for all iteration, 400 held out and run once per configuration.</p>
+        <div class="table-scroll">
+          <table class="metrics-t">
+            <thead><tr><th>Configuration (test split)</th><th class="num">Exec. acc.</th><th class="num">95% CI</th><th class="num">N</th><th class="num">$ / question</th><th class="num">p50 / p95</th></tr></thead>
+            <tbody>
+              <tr><td><span class="bar" style="width:63px"></span>Baseline: one shot, full schema, no samples, no retries · Haiku</td><td class="num">62.7%</td><td class="num">58.0–67.2</td><td class="num">400</td><td class="num">$0.00058</td><td class="num">4.4 / 10.5 s</td></tr>
+              <tr><td><span class="bar" style="width:73px"></span>Full schema + sample values + self-correction · Haiku</td><td class="num">73.2%</td><td class="num">68.8–77.5</td><td class="num">400</td><td class="num">$0.00065</td><td class="num">4.5 / 11.8 s</td></tr>
+              <tr><td><span class="bar" style="width:72px"></span>Agent, production pipeline · Haiku</td><td class="num">71.8%</td><td class="num">67.2–76.2</td><td class="num">400</td><td class="num">$0.00068</td><td class="num">4.4 / 14.8 s</td></tr>
+              <tr><td><span class="bar" style="width:66px"></span>Agent, schema linking forced · Haiku</td><td class="num">66.2%</td><td class="num">61.8–70.8</td><td class="num">400</td><td class="num">$0.00079</td><td class="num">4.7 / 14.3 s</td></tr>
+              <tr class="win"><td><span class="bar" style="width:87px"></span>Agent, shipped default · Sonnet</td><td class="num">87.0%</td><td class="num">80.0–93.0</td><td class="num">100</td><td class="num">$0.0063</td><td class="num">2.8 / 8.1 s</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Paired differences on the same questions, with bootstrap 95% intervals:</p>
+        <ul>
+          <li>Agent vs baseline: <b>+9.0 pp</b> (+4.0 to +14.0), N = 400.</li>
+          <li>Schema linking forced vs agent: <b>−5.5 pp</b> (−10.0 to −1.0), N = 400.</li>
+          <li>Sonnet vs Haiku, both running the agent: <b>+18.0 pp</b>, 87% vs 69% (+8 to +28), N = 100.</li>
+        </ul>
+        <p class="muted small">Execution accuracy: the result rows must match the gold query's rows (BIRD set comparison, floats rounded to 6 dp). Claude Haiku 5.5 and Sonnet 5.5, effort medium, BIRD hints given to every configuration, response cache off. Dataset: BIRD mini-dev (<code>birdsql/bird_mini_dev</code>), CC BY-SA 4.0. Each configuration was run once; two functionally identical Haiku pipelines differed by 1.5 pp on test, so gaps under about 5 pp are noise. Total API spend for the whole project, including development and all eval runs: $2.53 of a $5.00 cap enforced in code.</p>
+      </section>
+
+      <section class="body">
+        <h2>Schema linking, only when it pays</h2>
+        <p>Big warehouses don't fit in a prompt, so the agent has a schema linker: a lexical match on table and column names, plus a value index that finds the table holding “Marvel Comics”, plus foreign-key bridge tables. On the dev split, table recall went from 76% to 82% with the value index, then to 94% with top-6 retrieval and stemming.</p>
+        <p>Then the test split said no. Forcing the linker on BIRD's small schemas (3–13 tables) cost <b>5.5 points</b> to save 12% of prompt tokens. When it missed a needed table (43 of 400 questions), accuracy on those fell to 12%, against 74% when it didn't, and execution errors rose from 2 to 33.</p>
+        <p>So the linker runs only when the schema card is over 3,000 tokens, and the agent widens to the full schema on a missing-table error, an empty result or a clarification request. BIRD's schemas fit the budget and are sent whole.</p>
+      </section>
+
+      <section class="body">
+        <h2>Choosing the model by measurement</h2>
+        <p>All iteration ran on Claude Haiku 5.5, on the dev split, under a $5 budget. Medium effort beat low in all three dev pairs (+4, +7, +7 pp) for about 20% more output tokens.</p>
+        <p>Then Sonnet 5.5 ran the same agent on 100 of the test questions. It scored <b>87% against 69%</b>, and it was also faster (p50 2.8 s vs 4.4 s), because it wrote 390 output tokens per question against Haiku's 1,192. At $0.0063 per question, about $6 per 1,000 questions, Sonnet became the default. Haiku stays available as a budget mode.</p>
+      </section>
+
+      <figure class="figure-wide">
+        <a class="dg-frame" href="https://github.com/bprakashputta/sql-analyst-agent" style="display:block;padding:0;overflow:hidden"><img src="../assets/sql-analyst-agent/thumb.png" alt="The sql-analyst-agent UI answering “Which eight genres bring in the most revenue?”: a written answer, a bar chart, the SQL that ran and a step trace with timings and cost." width="1600" height="1000" loading="lazy" style="max-height:none"></a>
+        <figcaption><span class="label">Fig. 4</span>A revenue question on the Postgres demo. The answer, the chart, the SQL that ran, and every step with its time, tokens and cost: two model calls, $0.014.</figcaption>
+      </figure>
+
+      <section class="body">
+        <h2>Limits, stated plainly</h2>
+        <ul>
+          <li><b>It is not always right, and it can't tell when it's wrong.</b> 87% (Sonnet, N = 100) and 71.8% (Haiku, N = 400) on BIRD's hard questions. It shows SQL, rows and assumptions so a person can check: an analyst's draft, not an oracle. Most remaining errors run cleanly and return a plausible but different result, which is a question of interpretation, not syntax.</li>
+          <li><b>The Sonnet number has a wide interval</b> (80–93%) because it rests on 100 questions.</li>
+          <li><b>The linker is lexical.</b> It misses synonyms (“revenue” → <code>Invoice.Total</code>) and would need a better retriever for warehouses with hundreds of tables.</li>
+          <li><b>Safety covers writes</b>, escapes, catalog reads and runaway queries. Row- and column-level permissions belong in the database role; heavy concurrent load is not covered.</li>
+          <li><b>Single-turn</b> questions plus one clarification step; no follow-up memory. SQLite and Postgres only. English only.</li>
+          <li>The benchmark runs on SQLite. The Postgres path is covered by integration tests and the demo, not by a benchmark run.</li>
+        </ul>
+      </section>
+
+      <section class="body">
+        <h2>Quality</h2>
+        <ul>
+          <li><b>162 tests</b>: 135 offline unit and integration tests with a faked model and per-test SQLite fixtures, plus 27 Postgres integration tests against the real compose image.</li>
+          <li>GitHub Actions CI on Python 3.12 and 3.13 with ruff lint and format checks, and a Postgres job that builds the database image.</li>
+          <li>Eval harness in the repo: resumable threaded runner, per-question JSONL, bootstrap intervals and paired deltas, a safety suite and a guard-fidelity check.</li>
+          <li>Six architecture decision records, one per trade-off: read-only by construction, the sqlglot guard, linking with a budget, evaluation on BIRD, model effort and result review, SQLite and Postgres.</li>
+        </ul>
+        <h3>Stack</h3>
+        <ul class="tags"><li>Python 3.12</li><li>LangGraph</li><li>LangChain</li><li>Claude</li><li>FastAPI</li><li>pydantic</li><li>SQLAlchemy 2</li><li>psycopg 3</li><li>sqlglot</li><li>Postgres 17</li><li>SQLite</li><li>Docker</li><li>pytest</li><li>GitHub Actions</li></ul>
+        <h3 style="margin-top:40px">Fits more than one sample database</h3>
+        <p class="muted">The same pattern (a model that drafts, code that checks, and a database that refuses anything but reads) fits finance and ops reporting, product analytics, CRM and ERP data, or any internal database your team asks questions of every day.</p>
+        <div class="links"><a class="btn solid" href="https://www.upwork.com/freelancers/~01ba1048297cfaf8b2">Discuss a project <span class="arr">→</span></a></div>
+      </section>
+    </div>
+
+    <nav class="next" aria-label="Next case study">
+      <span class="label">Next case study</span>
+      <a class="big" href="support-desk-agent.html">support-desk-agent: a support agent that takes real actions, safely</a>
+      <span class="mono small">05 →</span>
+    </nav>
+  </main>
+
+  <footer class="site">
+    <div class="wrap">
+      <span>© 2026 Bhanu Prakash Putta</span>
+      <span><a href="../">Home</a> · <a href="https://github.com/bprakashputta">GitHub</a></span>
+    </div>
+  </footer>
+</body>
+</html>

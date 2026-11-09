@@ -1,0 +1,375 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>contract-review-ai — Case study — Bhanu Prakash Putta</title>
+  <meta name="description" content="contract-review-ai: upload a contract and get 12 key clauses, each with verbatim text checked against the document by code, plus playbook risk flags and cited answers. Evaluated on 102 lawyer-annotated CUAD contracts.">
+  <meta property="og:title" content="contract-review-ai — clauses you can verify">
+  <meta property="og:image" content="https://bprakashputta.github.io/assets/contract-review-ai/thumb.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap">
+  <link rel="stylesheet" href="../assets/site.css">
+  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+  <style>
+    .shot { display: block; padding: 0; overflow: hidden; background: var(--figure-bg); border: 1px solid var(--rule); border-radius: 6px; }
+    .shot img { display: block; width: 100%; height: auto; }
+    .cat-t td:first-child { white-space: nowrap; }
+    .body td.num { white-space: nowrap; }
+    .wide-t { margin-top: 0; }
+    .wide-t table { margin: 0; }
+    .wide-t { margin-bottom: 0; }
+    .wide-t th.num, .wide-t td.num { white-space: nowrap; }
+    .wide-t + .body { padding-top: 0; border-top: 0; margin-top: 0; }
+    @media (max-width: 640px) {
+      .wide-t table.metrics-t th:nth-child(n+3), .wide-t table.metrics-t td:nth-child(n+3) { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="wrap">
+      <a class="brand" href="../"><b>Bhanu Prakash Putta</b><span class="hide-sm"> · AI Engineer</span></a>
+      <nav aria-label="Primary">
+        <a href="../#work">Work</a>
+        <a href="../#approach" class="hide-sm">Approach</a>
+        <a href="../#contact">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <header class="case-head">
+      <p class="crumb"><a href="../#work">Work</a> / 03 / contract-review-ai</p>
+      <h1 class="display">Contract clauses you can <em>verify</em>, not just read.</h1>
+      <p class="dek">Upload a contract and get its 12 highest-stakes clauses: renewal, liability cap, exclusivity, assignment and more. Each one comes with the exact text and its location, checked against the document by code. A team-owned playbook flags risks, and Q&amp;A answers with verified citations. About $0.0015 per contract.</p>
+      <div class="links">
+        <a class="btn solid" href="https://github.com/bprakashputta/contract-review-ai">Code on GitHub <span class="arr">→</span></a>
+        <a class="btn" href="https://github.com/bprakashputta/contract-review-ai/blob/main/evals/results/RESULTS.md">Full eval results</a>
+        <a class="btn hide-sm" href="https://github.com/bprakashputta/contract-review-ai/tree/main/docs/decisions">Design decisions</a>
+      </div>
+    </header>
+
+    <div class="numbers">
+      <div><b>0.821<span class="to">→</span>0.893</b><span>micro-F1 on 102 held-out CUAD contracts</span></div>
+      <div><b>−44%</b><span>input tokens per contract, no measurable quality loss</span></div>
+      <div><b>$0.0015</b><span>mean cost per contract, one model call</span></div>
+      <div><b>2 / 599</b><span>quotes the model invented, both caught and dropped</span></div>
+    </div>
+
+    <div class="case">
+      <aside class="meta" aria-label="Project facts">
+        <dl>
+          <dt>Role</dt><dd>Author and maintainer</dd>
+          <dt>Year</dt><dd>2026</dd>
+          <dt>License</dt><dd>MIT, open source</dd>
+          <dt>Evaluated on</dt><dd>CUAD v1 official test split: 102 contracts × 12 clause types</dd>
+          <dt>Stack</dt><dd>Python 3.12, FastAPI, LangGraph, Claude Haiku 5.5, SQLite, Docker</dd>
+        </dl>
+      </aside>
+
+      <section class="body first">
+        <h2>The idea</h2>
+        <p>Small legal and ops teams spend hours on the first read of vendor and partner contracts, hunting for the renewal terms, the liability cap, the exclusivity and assignment clauses. A generic AI summary doesn't help much, because it paraphrases, and sometimes invents, the clause you need to rely on.</p>
+        <p>The rule here is simple: <b>the model quotes, code checks.</b></p>
+        <ul>
+          <li><b>Extract.</b> One Claude Haiku 5.5 call with JSON-schema output returns, for each of 12 clause types, whether it is present and the quotes that show it.</li>
+          <li><b>Verify.</b> Code matches every quote against the document and maps it to exact character offsets. A quote that can't be found is dropped, and a clause counts as found only if one of its quotes verifies.</li>
+          <li><b>Flag.</b> Risk comes from the team's own YAML playbook, evaluated in code over verified clauses only. Notice periods and jurisdictions are parsed from the quote text, not taken from the model.</li>
+          <li><b>Ask.</b> Questions get answers with citations, and every citation is verified the same way. An answer with no verified citation is marked unsupported.</li>
+        </ul>
+      </section>
+
+      <figure class="figure-wide">
+        <div class="dg-frame">
+          <svg class="dg" viewBox="0 0 1000 410" role="img" aria-labelledby="cr-arch-t">
+            <title id="cr-arch-t">Architecture: the web UI or any HTTP client calls a FastAPI service. Inside, a parser splits the contract into sections stored in SQLite; a LangGraph review graph and a cited Q&amp;A graph call Claude only through llm.py, which checks a spend ledger, uses a response cache, retries and logs cost. llm.py calls the Anthropic Messages API and writes the cache and spend ledger to a data volume.</title>
+            <defs><marker id="cr-a1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0,1 L9,5 L0,9 z"/></marker></defs>
+
+            <rect class="box ext" x="230" y="10" width="250" height="52" rx="4"/>
+            <text class="t" x="355" y="32" text-anchor="middle">Web UI</text>
+            <text class="s" x="355" y="50" text-anchor="middle">vanilla JS · highlights</text>
+            <rect class="box ext" x="520" y="10" width="250" height="52" rx="4"/>
+            <text class="t" x="645" y="32" text-anchor="middle">Any HTTP client</text>
+            <text class="s" x="645" y="50" text-anchor="middle">curl · your app</text>
+            <path class="e" d="M355 62 V106" marker-end="url(#cr-a1)"/>
+            <path class="e" d="M645 62 V106" marker-end="url(#cr-a1)"/>
+            <text class="el" x="367" y="90">upload · review · ask</text>
+
+            <rect class="box soft" x="40" y="110" width="920" height="210" rx="6"/>
+            <text class="g" x="60" y="134">FastAPI service · api.py</text>
+
+            <rect class="box" x="60" y="146" width="190" height="56" rx="4"/>
+            <text class="t" x="155" y="169" text-anchor="middle">Parser</text>
+            <text class="s" x="155" y="188" text-anchor="middle">sections + offsets</text>
+            <path class="e" d="M250 174 H286" marker-end="url(#cr-a1)"/>
+            <rect class="box" x="290" y="146" width="190" height="56" rx="4"/>
+            <text class="t" x="385" y="169" text-anchor="middle">SQLite store</text>
+            <text class="s" x="385" y="188" text-anchor="middle">documents · reviews</text>
+            <path class="e dash" d="M520 174 H482" marker-end="url(#cr-a1)"/>
+            <rect class="box hot" x="520" y="146" width="190" height="56" rx="4"/>
+            <text class="t" x="615" y="169" text-anchor="middle">Review graph</text>
+            <text class="s" x="615" y="188" text-anchor="middle">LangGraph · 6 nodes</text>
+            <rect class="box" x="750" y="146" width="190" height="56" rx="4"/>
+            <text class="t" x="845" y="169" text-anchor="middle">Cited Q&amp;A graph</text>
+            <text class="s" x="845" y="188" text-anchor="middle">retrieve→answer→verify</text>
+
+            <path class="e" d="M615 202 V234" marker-end="url(#cr-a1)"/>
+            <path class="e" d="M845 202 V234" marker-end="url(#cr-a1)"/>
+
+            <rect class="box" x="60" y="238" width="880" height="62" rx="4"/>
+            <text class="t" x="500" y="262" text-anchor="middle">llm.py · the only module that calls Claude</text>
+            <text class="s" x="500" y="284" text-anchor="middle">spend-ledger pre-check · response cache · retries + timeout · usage → cost → JSON log</text>
+
+            <path class="e dash" d="M270 300 V340" marker-end="url(#cr-a1)"/>
+            <path class="e" d="M730 300 V340" marker-end="url(#cr-a1)"/>
+            <rect class="box ext" x="80" y="344" width="380" height="56" rx="4"/>
+            <text class="t" x="270" y="367" text-anchor="middle">data/ volume</text>
+            <text class="s" x="270" y="386" text-anchor="middle">contracts.db · llm_cache.sqlite · spend.jsonl</text>
+            <rect class="box ext" x="560" y="344" width="340" height="56" rx="4"/>
+            <text class="t" x="730" y="367" text-anchor="middle">Anthropic Messages API</text>
+            <text class="s" x="730" y="386" text-anchor="middle">Claude Haiku 5.5 · JSON schema</text>
+          </svg>
+        </div>
+        <figcaption><span class="label">Fig. 1</span><span class="dg-hint">scroll →</span> System architecture. One module talks to Claude, and it refuses any call whose worst-case cost would break the hard spend cap.</figcaption>
+      </figure>
+
+      <figure class="figure-wide">
+        <a class="shot" href="https://github.com/bprakashputta/contract-review-ai"><picture><source srcset="../assets/contract-review-ai/review-dark.png" media="(prefers-color-scheme: dark)"><img src="../assets/contract-review-ai/thumb.png" width="1600" height="1000" loading="lazy" alt="contract-review-ai reviewing a 101,639-character outsourcing agreement from the CUAD test set: a clause table on the left and the contract text on the right with the verified liability-cap quotes highlighted"></picture></a>
+        <figcaption><span class="label">Fig. 2</span>A 101K-character outsourcing agreement from the CUAD test set. The prefilter sent 48 of 176 sections; the review cost $0.0023 and took 7.5 s cold. Clicking a clause scrolls to its verified span.</figcaption>
+      </figure>
+
+      <section class="body">
+        <h2>The review graph</h2>
+        <p>Review is a six-node LangGraph pipeline. Only one node uses a model. Long contracts take a detour through a free lexical prefilter, and short ones (under 3K tokens) go to the model whole.</p>
+      </section>
+
+      <figure class="figure-wide">
+        <div class="dg-frame">
+          <svg class="dg" viewBox="0 0 1000 300" role="img" aria-labelledby="cr-graph-t">
+            <title id="cr-graph-t">Review graph: parse, then prefilter for long documents, or skip straight to extract for short documents. Extract is the only model call. Then verify, where unverified quotes are dropped, then playbook rules and the report.</title>
+            <defs>
+              <marker id="cr-b1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0,1 L9,5 L0,9 z"/></marker>
+            </defs>
+
+            <path class="e dash" d="M90 120 V68 H450 V116" marker-end="url(#cr-b1)"/>
+            <text class="el" x="270" y="60" text-anchor="middle">short doc or mode=full: skip the prefilter</text>
+
+            <text class="n" x="22" y="112">01 · code</text>
+            <rect class="box" x="22" y="120" width="136" height="76" rx="4"/>
+            <text class="t" x="90" y="142" text-anchor="middle">parse</text>
+            <text class="s" x="90" y="164" text-anchor="middle">pypdf · docx</text>
+            <text class="s" x="90" y="180" text-anchor="middle">sections S1…Sn</text>
+            <path class="e" d="M158 158 H182" marker-end="url(#cr-b1)"/>
+
+            <text class="n" x="186" y="112">02 · code</text>
+            <rect class="box" x="186" y="120" width="136" height="76" rx="4"/>
+            <text class="t" x="254" y="142" text-anchor="middle">prefilter</text>
+            <text class="s" x="254" y="164" text-anchor="middle">BM25 + keywords</text>
+            <text class="s" x="254" y="180" text-anchor="middle">top 3 per type</text>
+            <path class="e" d="M322 158 H346" marker-end="url(#cr-b1)"/>
+
+            <text class="n" x="350" y="112">03 · model</text>
+            <rect class="box hot" x="350" y="120" width="136" height="76" rx="4"/>
+            <text class="t" x="418" y="142" text-anchor="middle">extract</text>
+            <text class="s" x="418" y="164" text-anchor="middle">Haiku 5.5</text>
+            <text class="s" x="418" y="180" text-anchor="middle">JSON schema</text>
+            <path class="e" d="M486 158 H510" marker-end="url(#cr-b1)"/>
+
+            <text class="n" x="514" y="112">04 · code</text>
+            <rect class="box" x="514" y="120" width="136" height="76" rx="4"/>
+            <text class="t" x="582" y="142" text-anchor="middle">verify</text>
+            <text class="s" x="582" y="164" text-anchor="middle">match + offsets</text>
+            <text class="s" x="582" y="180" text-anchor="middle">exact · repaired</text>
+            <path class="e" d="M650 158 H674" marker-end="url(#cr-b1)"/>
+
+            <text class="n" x="678" y="112">05 · code</text>
+            <rect class="box" x="678" y="120" width="136" height="76" rx="4"/>
+            <text class="t" x="746" y="142" text-anchor="middle">playbook</text>
+            <text class="s" x="746" y="164" text-anchor="middle">YAML rules</text>
+            <text class="s" x="746" y="180" text-anchor="middle">verified only</text>
+            <path class="e" d="M814 158 H838" marker-end="url(#cr-b1)"/>
+
+            <text class="n" x="842" y="112">06 · code</text>
+            <rect class="box" x="842" y="120" width="136" height="76" rx="4"/>
+            <text class="t" x="910" y="142" text-anchor="middle">report</text>
+            <text class="s" x="910" y="164" text-anchor="middle">clauses · flags</text>
+            <text class="s" x="910" y="180" text-anchor="middle">tokens · cost</text>
+
+            <path class="e dash" d="M582 196 V236" marker-end="url(#cr-b1)"/>
+            <rect class="box ext" x="487" y="240" width="190" height="52" rx="4"/>
+            <text class="t" x="582" y="262" text-anchor="middle">unverified quote</text>
+            <text class="s" x="582" y="280" text-anchor="middle">dropped, never flagged</text>
+          </svg>
+        </div>
+        <figcaption><span class="label">Fig. 3</span><span class="dg-hint">scroll →</span> The LangGraph review pipeline. In <code>mode=auto</code>, documents of 3,000 estimated tokens or more go through the prefilter; 81 of the 102 test contracts did.</figcaption>
+      </figure>
+
+      <section class="body">
+        <h2>Results on held-out contracts</h2>
+        <p>The dataset is <a href="https://www.atticusprojectai.org/cuad">CUAD v1</a> (The Atticus Project, CC BY 4.0): 510 commercial contracts with lawyer-annotated clause spans. I used the authors' official split. The 408 train contracts were the dev set for prefilter tuning, prompt iteration and verifier fixes. Everything below is on the <b>102 test contracts</b>, scored as 102 × 12 = 1,224 present/absent decisions, after verification.</p>
+      </section>
+
+      <div class="figure-wide table-scroll wide-t">
+          <table class="metrics-t">
+            <thead><tr><th>Configuration</th><th class="num">micro F1</th><th class="num">N</th><th class="num">micro P</th><th class="num">micro R</th><th class="num">macro F1</th><th class="num">span hit</th><th class="num">Jaccard</th><th class="num">$/contract</th><th class="num">p50</th></tr></thead>
+            <tbody>
+              <tr><td>Naive: whole contract, category names only · Haiku</td><td class="num">0.821</td><td class="num">102</td><td class="num">0.751</td><td class="num">0.906</td><td class="num">0.780</td><td class="num">0.959</td><td class="num">0.655</td><td class="num">$0.00228</td><td class="num">5.1 s</td></tr>
+              <tr><td>Whole contract + <code>extract.v2</code> prompt · Haiku</td><td class="num">0.889</td><td class="num">102</td><td class="num">0.845</td><td class="num">0.937</td><td class="num">0.858</td><td class="num">0.970</td><td class="num">0.692</td><td class="num">$0.00272</td><td class="num">3.8 s</td></tr>
+              <tr class="win"><td>Final: prefilter + <code>extract.v2</code> + verify · Haiku</td><td class="num">0.893</td><td class="num">102</td><td class="num">0.848</td><td class="num">0.944</td><td class="num">0.862</td><td class="num">0.968</td><td class="num">0.702</td><td class="num">$0.00151</td><td class="num">3.6 s</td></tr>
+              <tr><td>Final, exact-only verifier (ablation) · Haiku</td><td class="num">0.888</td><td class="num">102</td><td class="num">0.850</td><td class="num">0.930</td><td class="num">0.857</td><td class="num">0.967</td><td class="num">0.703</td><td class="num">$0.00151</td><td class="num">3.6 s</td></tr>
+              <tr><td>Final · Haiku 5.5, 40-contract subset</td><td class="num">0.901</td><td class="num">40</td><td class="num">0.847</td><td class="num">0.964</td><td class="num">0.875</td><td class="num">0.950</td><td class="num">0.715</td><td class="num">$0.00149</td><td class="num">3.6 s</td></tr>
+              <tr><td>Final · Sonnet 5.5, same 40 contracts</td><td class="num">0.902</td><td class="num">40</td><td class="num">0.863</td><td class="num">0.946</td><td class="num">0.880</td><td class="num">0.975</td><td class="num">0.692</td><td class="num">$0.0292</td><td class="num">5.6 s</td></tr>
+            </tbody>
+          </table>
+      </div>
+
+      <section class="body">
+        <p class="muted small">Span hit: among true positives, the share where a quote overlaps a gold span. Jaccard: character overlap with the gold spans. The Sonnet subset is seeded.</p>
+        <p>Paired bootstrap over contracts, 5,000 resamples, difference in micro-F1:</p>
+        <div class="table-scroll">
+          <table>
+            <thead><tr><th>Comparison</th><th class="num">Δ</th><th class="num">95% CI</th></tr></thead>
+            <tbody>
+              <tr><td>Final vs naive (N = 102)</td><td class="num">+0.072</td><td class="num">[+0.049, +0.096]</td></tr>
+              <tr><td>Final vs whole contract, same prompt (N = 102)</td><td class="num">+0.005</td><td class="num">[−0.013, +0.022]</td></tr>
+              <tr><td>Sonnet 5.5 vs Haiku 5.5 (N = 40)</td><td class="num">+0.001</td><td class="num">[−0.024, +0.025]</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Read plainly: the prompt work is a real gain. The prefilter's cost saving comes with no measurable change in quality, in either direction. And the stronger model buys nothing measurable here.</p>
+      </section>
+
+      <section class="body">
+        <h2>Four problems worth solving</h2>
+
+        <h3><span class="n mono" style="color:var(--signal-ink)">01</span>&nbsp; The real enemy was page footers, not hallucinations</h3>
+        <p>I expected verification to catch invented quotes. It mostly caught real ones. CUAD's text, like most text pulled from PDFs, has page headers, footers and <code>-----</code> rules in the middle of sentences. The model quotes the sentence the way a person reads it, so an exact match rejects a genuine clause.</p>
+        <ul>
+          <li>Normalization treats separator rules as whitespace and keeps an offset map back to the original text.</li>
+          <li>A “stitched” matcher binary-searches the longest matching prefix, then continues within 400 characters, up to 4 in-order fragments of at least 20 characters each.</li>
+          <li>A repaired quote is <b>replaced with the document's own text</b> over the matched span, so the UI only ever shows verbatim text.</li>
+        </ul>
+        <div class="table-scroll">
+          <table>
+            <thead><tr><th>Configuration (test)</th><th class="num">quotes</th><th class="num">dropped</th><th class="num">repaired</th></tr></thead>
+            <tbody>
+              <tr class="win"><td>Final</td><td class="num">599</td><td class="num">2</td><td class="num">11</td></tr>
+              <tr><td>Naive</td><td class="num">645</td><td class="num">4</td><td class="num">23</td></tr>
+              <tr><td>Exact-only verifier (ablation)</td><td class="num">599</td><td class="num">13</td><td class="num">–</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>The exact-only verifier lost 6 true-positive clauses (and removed 3 false positives): F1 0.888 against 0.893. Genuine fabrications were 2 of 599, or 0.3%, and both look plausible, which is why they matter. In one, the model finished a sentence the extracted text cuts off: “which consent shall” became “…shall not be unreasonably withheld.” In the other, it joined clauses 7.1 and 7.1.3 into one quote. Both were dropped.</p>
+
+        <h3><span class="n mono" style="color:var(--signal-ink)">02</span>&nbsp; A free prefilter instead of embeddings</h3>
+        <p>Whole-contract requests averaged 17.9K input tokens, and the longest passed 100K, where Haiku's per-token price is 5× higher. Rather than add embeddings or map-reduce, the prefilter scores sections with BM25 against each clause type's description and keywords, keeps the top 3 per type plus up to 6 anchor-keyword hits, and sends the union with <code>[...]</code> marking the gaps.</p>
+        <p>I picked <i>k</i> on the train split with a sweep that makes no model calls: at <i>k</i> = 3, 98.6% of present clauses stay reachable with 45% of the tokens. On test, mean input tokens fell from 17,881 to 10,060 (−44%), mean cost from $0.00272 to $0.00151, and the most expensive contract from $0.054 to $0.004.</p>
+
+        <h3><span class="n mono" style="color:var(--signal-ink)">03</span>&nbsp; Quality came from prompt boundaries</h3>
+        <p>A prompt that only names the categories over-triggers on look-alikes. Version 1 added CUAD's own category definitions. Version 2 added boundary notes written from dev-split false positives:</p>
+<pre><code><span class="c"># prompts/extract.v2.yaml · a few boundary notes</span>
+uncapped liability   <span class="hi">an indemnity alone is not uncapped liability</span>
+IP assignment        <span class="hi">a party keeping its own IP is not assignment</span>
+auto-renewal         <span class="hi">renewal by mutual agreement is not a renewal term</span>
+termination for conv <span class="hi">“may NOT be terminated for convenience” is not found</span></code></pre>
+        <p>On 60 dev contracts, micro-F1 went from 0.865 (v1) to 0.882 (v2). On test, uncapped-liability F1 rose from 0.351 (naive) to 0.743, and IP assignment from 0.582 to 0.750.</p>
+
+        <h3><span class="n mono" style="color:var(--signal-ink)">04</span>&nbsp; The model never decides risk, and a bigger model wasn't worth it</h3>
+        <p>Risk is policy, so it belongs to the team, not the model. The playbook is YAML with four rule types (<code>required</code>, <code>forbidden</code>, <code>min_notice_days</code>, <code>allowed_values</code>) and runs over verified clauses only, so a dropped quote can never raise a flag. Code parses “ninety (90) days” to 90 and reads the jurisdiction from the quote.</p>
+        <p>Before settling on a model, I ran Sonnet 5.5 on the same 40 test contracts. It scored 0.902 against Haiku's 0.901 (Δ +0.001, CI [−0.024, +0.025]) at <b>19.6× the cost</b> and 2 s more at p50. Haiku stays the default.</p>
+      </section>
+
+      <figure class="figure-wide">
+        <a class="shot" href="https://github.com/bprakashputta/contract-review-ai"><img src="../assets/contract-review-ai/risk-flags.png" width="1130" height="722" loading="lazy" alt="Risk flags for the outsourcing agreement: one high (uncapped liability carve-out), two medium (termination for convenience, IP assignment) and lower-severity flags, each with its playbook rule id and the verified quote; the change-of-control clause is highlighted in the contract text"></a>
+        <figcaption><span class="label">Fig. 4</span>Playbook flags on the same contract. Each flag names its rule and shows the verified quote it came from.</figcaption>
+      </figure>
+
+      <section class="body">
+        <h2>Per clause type</h2>
+        <p>Final pipeline, test N = 102. Presence detection is strong on the clearly worded clauses and weaker where CUAD's labels are themselves fuzzy.</p>
+        <div class="table-scroll">
+          <table class="cat-t">
+            <thead><tr><th>Clause type</th><th class="num">F1</th></tr></thead>
+            <tbody>
+              <tr><td>Governing law</td><td class="num">0.994</td></tr>
+              <tr><td>Anti-assignment</td><td class="num">0.986</td></tr>
+              <tr><td>Audit rights</td><td class="num">0.925</td></tr>
+              <tr><td>Auto-renewal</td><td class="num">0.923</td></tr>
+              <tr><td>Notice to stop renewal</td><td class="num">0.903</td></tr>
+              <tr><td>Exclusivity</td><td class="num">0.877</td></tr>
+              <tr><td>Liability cap</td><td class="num">0.864</td></tr>
+              <tr><td>Termination for convenience</td><td class="num">0.818</td></tr>
+              <tr><td>Change of control</td><td class="num">0.815</td></tr>
+              <tr><td>Non-compete</td><td class="num">0.750</td></tr>
+              <tr><td>IP assignment</td><td class="num">0.750</td></tr>
+              <tr><td>Uncapped liability</td><td class="num">0.743</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="body">
+        <h2>Cited Q&amp;A</h2>
+        <p>Each clause type becomes a plain question, such as “Can either party terminate without cause, just by giving notice?”. Each of 30 test contracts gets up to 2 questions whose clause is present and 2 whose clause is absent: 113 questions in all. Retrieval is BM25 over sections; the answer is structured, and every citation is verified. Each answer costs about $0.0003, with a p50 of 1.2 s.</p>
+        <div class="table-scroll">
+          <table class="metrics-t">
+            <thead><tr><th>Retrieval (test)</th><th class="num">answers iff clause exists</th><th class="num">present → answered</th><th class="num">present → citation on gold</th><th class="num">absent → abstained</th><th class="num">unverified citations</th></tr></thead>
+            <tbody>
+              <tr><td>BM25 on the question</td><td class="num">0.832</td><td class="num">0.782</td><td class="num">0.764</td><td class="num">0.879</td><td class="num">0/94</td></tr>
+              <tr class="win"><td>BM25 + category query expansion</td><td class="num">0.841</td><td class="num">0.836</td><td class="num">0.800</td><td class="num">0.845</td><td class="num">0/102</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout"><span class="label">How this table came to have two rows</span>The first test run used plain BM25. Diagnosing its misses showed that 10 of the 12 unanswered present-clause questions were retrieval failures: the gold clause wasn't in the top 6 sections. I then built query expansion and compared both variants on 30 dev contracts (present-clause hit rate 0.765 → 0.863) before running test a second time. Because the change was motivated by a test run, both test runs are reported. The trade-off is real: recall went up, and abstention on absent clauses went down from 0.879 to 0.845.</div>
+      </section>
+
+      <section class="body">
+        <h2>Production basics</h2>
+        <ul>
+          <li><b>Hard spend cap.</b> A ledger checks each call's worst-case cost before it is sent, and the API returns 429 once the budget is gone. The whole project, including development, every eval run and the demo, spent <b>$2.27 of a $5.00 cap</b> (the Sonnet comparison was about $1.17 of that).</li>
+          <li><b>Response cache</b> keyed on the exact request body, so identical calls cost $0. Per-call tokens, cost and latency go to JSON logs.</li>
+          <li><b>Latency:</b> p50 3.6 s and p95 6.9 s per contract, one call.</li>
+          <li><b>35 offline pytest tests</b> with a faked LLM transport: normalization and offsets, page-break and truncated-sentence verification, PDF/DOCX/TXT parsing, prefilter, playbook rules, ledger and pricing tiers, pipeline routing, Q&amp;A citation checks, API errors, bootstrap.</li>
+          <li><b>CI</b> on GitHub Actions: lint, format and tests on Python 3.12 and 3.13, plus a Docker build. <code>docker compose up --build</code> verified end to end.</li>
+          <li><b>Reproducible evals:</b> <code>make eval-all</code> regenerates every row above into committed JSON and <code>RESULTS.md</code>.</li>
+        </ul>
+      </section>
+
+      <section class="body">
+        <h2>Limitations</h2>
+        <ul>
+          <li>Precision is weak in three types: uncapped liability (P 0.59), IP assignment (P 0.64) and non-compete (P 0.64). Some of those errors are CUAD label inconsistencies, but not all.</li>
+          <li>Span boundaries are looser than presence: mean Jaccard with gold spans is 0.70. The model often quotes one sentence where annotators marked several.</li>
+          <li>Q&amp;A still answers 15% of absent-clause questions.</li>
+          <li>The Sonnet comparison (N = 40) and the Q&amp;A eval (113 questions) are small, and their confidence intervals are wide.</li>
+          <li>No OCR, so scanned PDFs are rejected. Tuned on English, SEC-filed commercial agreements.</li>
+          <li>Single tenant, no auth, and SQLite allows one writer. This is not legal advice.</li>
+        </ul>
+      </section>
+
+      <section class="body">
+        <h2>Stack</h2>
+        <ul class="tags"><li>Python 3.12</li><li>uv</li><li>FastAPI</li><li>LangGraph</li><li>Anthropic SDK</li><li>Claude Haiku 5.5</li><li>pydantic v2</li><li>pypdf</li><li>python-docx</li><li>rapidfuzz</li><li>BM25</li><li>SQLite</li><li>vanilla JS</li><li>Docker</li><li>GitHub Actions</li><li>pytest</li><li>ruff</li></ul>
+        <h3 style="margin-top:40px">Fits more than contracts</h3>
+        <p class="muted">The same pattern (structured extraction, every quote verified against the source by code, rules owned by the team, a measured eval on labeled data, and a hard cost cap) fits policies, claims, invoices, compliance filings and any document where a wrong quote is worse than none.</p>
+        <div class="links"><a class="btn solid" href="https://www.upwork.com/freelancers/~01ba1048297cfaf8b2">Discuss a project <span class="arr">→</span></a></div>
+      </section>
+    </div>
+
+    <nav class="next" aria-label="Next case study">
+      <span class="label">Next case study</span>
+      <a class="big" href="sql-analyst-agent.html">sql-analyst-agent: chat with your database, safely</a>
+      <span class="mono small">04 →</span>
+    </nav>
+  </main>
+
+  <footer class="site">
+    <div class="wrap">
+      <span>© 2026 Bhanu Prakash Putta</span>
+      <span><a href="../">Home</a> · <a href="https://github.com/bprakashputta">GitHub</a></span>
+    </div>
+  </footer>
+</body>
+</html>

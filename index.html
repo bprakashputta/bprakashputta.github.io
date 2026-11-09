@@ -66,7 +66,7 @@
         <div class="section-head">
           <span class="label">01 — Selected work</span>
           <div>
-            <h2>Systems with the code, the design notes and the numbers.</h2>
+            <h2>Six systems, each with the code, the design notes and the numbers.</h2>
           </div>
         </div>
 
@@ -101,6 +101,65 @@
             <div class="thumb"><img src="assets/predmarket/board.png" alt="The predmarket-mcp cross-venue board" loading="lazy"></div>
           </a>
 
+          <a class="work-item" href="work/contract-review-ai.html">
+            <div class="idx">03<span>2026 · Open source</span></div>
+            <div>
+              <h3>contract-review-ai</h3>
+              <p>Upload a contract and get 12 key clauses with verbatim quotes checked against the document by code, plus playbook risk flags and cited answers. Evaluated on lawyer-labelled CUAD contracts.</p>
+              <ul class="facts">
+                <li>Micro-F1, 102 held-out CUAD contracts <b>0.821 → 0.893</b></li>
+                <li>Input tokens cut by prefilter <b>−44%</b></li>
+                <li>Cost per contract <b>$0.0015</b></li>
+              </ul>
+              <span class="more">Read the case study <span class="arr">→</span></span>
+            </div>
+            <div class="thumb"><img src="assets/contract-review-ai/thumb.png" alt="contract-review-ai: clause table with verified quotes highlighted in the contract" loading="lazy"></div>
+          </a>
+
+          <a class="work-item" href="work/sql-analyst-agent.html">
+            <div class="idx">04<span>2026 · Open source</span></div>
+            <div>
+              <h3>sql-analyst-agent</h3>
+              <p>A LangGraph agent that answers business questions in SQL, shows the query, charts and explains the result, and is read-only by construction. Evaluated on the BIRD text-to-SQL benchmark.</p>
+              <ul class="facts">
+                <li>Execution accuracy, Haiku (N=400) <b>62.7 → 71.8%</b></li>
+                <li>Shipped default, Sonnet (N=100) <b>87%</b></li>
+                <li>Writes from 25 hostile prompts <b>0</b></li>
+              </ul>
+              <span class="more">Read the case study <span class="arr">→</span></span>
+            </div>
+            <div class="thumb"><img src="assets/sql-analyst-agent/thumb.png" alt="sql-analyst-agent: a revenue question answered with SQL, chart and explanation" loading="lazy"></div>
+          </a>
+
+          <a class="work-item" href="work/support-desk-agent.html">
+            <div class="idx">05<span>2026 · Open source</span></div>
+            <div>
+              <h3>support-desk-agent</h3>
+              <p>A support agent that cancels, returns and refunds real orders. Policy checks run in code, refunds over $1,000 wait for a person, and every write happens exactly once. Tested on τ-bench retail.</p>
+              <ul class="facts">
+                <li>Conversations with a policy-violating write <b>6.1% → 0%</b></li>
+                <li>Task success, all 115 test tasks <b>73.9%</b></li>
+                <li>Red-team attacks defended <b>16 / 16</b></li>
+              </ul>
+              <span class="more">Read the case study <span class="arr">→</span></span>
+            </div>
+            <div class="thumb"><img src="assets/support-desk-agent/thumb.png" alt="support-desk-agent: customer chat beside the agent console with a pending refund approval" loading="lazy"></div>
+          </a>
+
+          <a class="work-item" href="work/assaygate.html">
+            <div class="idx">06<span>2026 · Open source</span></div>
+            <div>
+              <h3>assaygate</h3>
+              <p>An open-source CI gate for LLM apps: it blocks a pull request when quality, cost or p95 latency gets worse, decided with paired confidence intervals, and checks the LLM judge against human labels first.</p>
+              <ul class="facts">
+                <li>Regression caught in a prompt that halved cost <b>−6.0 pt, p = 0.005</b></li>
+                <li>Narrower CI from pairing items <b>3.4×</b></li>
+                <li>Judge agreement, math and coding <b>64 → 76%</b></li>
+              </ul>
+              <span class="more">Read the case study <span class="arr">→</span></span>
+            </div>
+            <div class="thumb"><img src="assets/assaygate/thumb.png" alt="assaygate: a failed gate report with per-metric confidence intervals" loading="lazy"></div>
+          </a>
           <div class="work-minor">
             <div class="idx label">Also</div>
             <article>

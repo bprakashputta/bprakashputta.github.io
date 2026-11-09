@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>assaygate — Case study — Bhanu Prakash Putta</title>
+  <meta name="description" content="assaygate: open-source LLM evaluation and regression gating for CI. Paired bootstrap confidence intervals block a pull request when quality, cost or p95 latency gets worse, with an LLM judge calibrated against human labels.">
+  <meta property="og:title" content="assaygate — a CI gate for LLM regressions">
+  <meta property="og:image" content="https://bprakashputta.github.io/assets/assaygate/thumb.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap">
+  <link rel="stylesheet" href="../assets/site.css">
+  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+  <style>
+    .figure-wide.tbl { margin-top: 0; }
+    .figure-wide.tbl table { margin-top: 0; }
+    .figure-wide.tbl td, .figure-wide.tbl th { white-space: nowrap; }
+    .figure-wide.tbl td:first-child { white-space: normal; }
+    td.bad { color: var(--signal-ink); font-weight: 600; }
+    tr.ref td { color: var(--ink-3); }
+    td.num { white-space: nowrap; }
+    @media (max-width: 640px) { .tbl table.metrics-t th:nth-child(n+3), .tbl table.metrics-t td:nth-child(n+3) { display: none; } }
+    .ci { display: block; font-size: 12px; color: var(--ink-3); font-weight: 400; }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="wrap">
+      <a class="brand" href="../"><b>Bhanu Prakash Putta</b><span class="hide-sm"> · AI Engineer</span></a>
+      <nav aria-label="Primary">
+        <a href="../#work">Work</a>
+        <a href="../#approach" class="hide-sm">Approach</a>
+        <a href="../#contact">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <header class="case-head">
+      <p class="crumb"><a href="../#work">Work</a> / 06 / assaygate</p>
+      <h1 class="display">The LLM regression a reviewer would <em>approve</em>, blocked in CI.</h1>
+      <p class="dek">Every prompt edit or model swap can quietly break an LLM feature. assaygate runs a test suite on each pull request, compares it item by item with the main-branch run, and fails the build only when the statistics say quality, cost or latency really got worse. It also measures how far to trust the LLM judge before it gates anything.</p>
+      <div class="links">
+        <a class="btn solid" href="https://github.com/bprakashputta/assaygate">Code on GitHub <span class="arr">→</span></a>
+        <a class="btn" href="https://github.com/bprakashputta/assaygate#quick-start">Quick start</a>
+        <a class="btn hide-sm" href="https://github.com/bprakashputta/assaygate/tree/main/docs/decisions">Decision records</a>
+      </div>
+    </header>
+
+    <div class="numbers">
+      <div><b>−6.0 pt</b><span>regression caught in a prompt change that halved cost (CI −10.0 to −2.0)</span></div>
+      <div><b>3.4×</b><span>narrower confidence interval from pairing items, same 300 runs</span></div>
+      <div><b>64<span class="to">→</span>76%</b><span>judge–human agreement on math, reasoning and coding</span></div>
+      <div><b>$3.16</b><span>total API spend for the whole project, under a $5 hard cap</span></div>
+    </div>
+
+    <div class="case">
+      <aside class="meta" aria-label="Project facts">
+        <dl>
+          <dt>Role</dt><dd>Author and maintainer</dd>
+          <dt>Year</dt><dd>2026</dd>
+          <dt>License</dt><dd>MIT, open source</dd>
+          <dt>Evaluated on</dt><dd>MT-Bench human judgments (400 test pairs) and Banking77 (300 utterances), both CC BY 4.0</dd>
+          <dt>Stack</dt><dd>Python 3.12, Claude API, numpy, FastAPI, Typer, GitHub Actions</dd>
+        </dl>
+      </aside>
+
+      <section class="body first">
+        <h2>The problem</h2>
+        <p>Once an LLM feature ships, every change is a bet. Teams usually guard it one of two ways. Manual spot checks miss regressions. Score thresholds fire on run-to-run noise, because the same prompt scores a point or two differently each time, so people learn to ignore them and then switch them off.</p>
+        <p>assaygate treats a change like any other test. A suite (a dataset, the system under test and its scorers) runs on the pull request. The gate pairs each item with the same item from the main-branch run and asks one question: is the drop bigger than the noise? If yes, the job fails and the PR gets a comment that shows exactly which items broke.</p>
+      </section>
+
+      <figure class="figure-wide">
+        <div class="dg-frame">
+          <svg class="dg" viewBox="0 0 1000 432" role="img" aria-labelledby="ag-arch-t">
+            <title id="ag-arch-t">assaygate architecture. A suite and dataset feed the runner, which calls the system under test. Scorers use an LLM client with a cache, spend cap and backoff that calls the Claude API. Run artifacts from the candidate and the baseline go to the gate, which writes reports and drives a GitHub Action. Separately, human-labelled pairs go to calibration, which produces a judge report.</title>
+            <defs><marker id="ag-a1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0,1 L9,5 L0,9 z"/></marker></defs>
+
+            <rect class="box ext" x="280" y="10" width="230" height="46" rx="4"/>
+            <text class="t" x="296" y="30" style="font-size:13px">System under test</text><text class="s" x="296" y="47">callable or HTTP app</text>
+            <rect class="box ext" x="530" y="10" width="230" height="46" rx="4"/>
+            <text class="t" x="546" y="30" style="font-size:13px">Claude API</text><text class="s" x="546" y="47">structured outputs</text>
+
+            <rect class="box soft" x="260" y="76" width="520" height="348" rx="6"/>
+            <text class="g" x="276" y="94">assaygate</text>
+
+            <rect class="box ext" x="20" y="104" width="200" height="56" rx="4"/>
+            <text class="t" x="36" y="128">suite.yaml</text><text class="s" x="36" y="146">dataset · scorers · gate</text>
+            <rect class="box ext" x="20" y="272" width="200" height="56" rx="4"/>
+            <text class="t" x="36" y="296">Baseline run</text><text class="s" x="36" y="314">from main branch</text>
+            <rect class="box ext" x="20" y="356" width="200" height="56" rx="4"/>
+            <text class="t" x="36" y="380">Human labels</text><text class="s" x="36" y="398">MT-Bench · your own</text>
+
+            <rect class="box" x="280" y="104" width="230" height="56" rx="4"/>
+            <text class="t" x="296" y="128">Runner</text><text class="s" x="296" y="146">concurrency · rate limit</text>
+            <rect class="box" x="530" y="104" width="230" height="56" rx="4"/>
+            <text class="t" x="546" y="128">LLM client</text><text class="s" x="546" y="146">cache · spend cap · backoff</text>
+            <rect class="box" x="280" y="188" width="230" height="56" rx="4"/>
+            <text class="t" x="296" y="212">Scorers</text><text class="s" x="296" y="230">rules · LLM judges</text>
+            <rect class="box" x="530" y="188" width="230" height="56" rx="4"/>
+            <text class="t" x="546" y="212">Reports + API</text><text class="s" x="546" y="230">HTML · Markdown · FastAPI</text>
+            <rect class="box" x="280" y="272" width="230" height="56" rx="4"/>
+            <text class="t" x="296" y="296">Run artifacts</text><text class="s" x="296" y="314">records.jsonl · manifest</text>
+            <rect class="box hot" x="530" y="272" width="230" height="56" rx="4"/>
+            <text class="t" x="546" y="296">Gate</text><text class="s" x="546" y="314">paired bootstrap · McNemar</text>
+            <rect class="box" x="280" y="356" width="230" height="56" rx="4"/>
+            <text class="t" x="296" y="380">Calibrate</text><text class="s" x="296" y="398">variants × both orders</text>
+
+            <rect class="box ext" x="800" y="188" width="180" height="56" rx="4"/>
+            <text class="t" x="816" y="212">HTML report</text><text class="s" x="816" y="230">light + dark themes</text>
+            <rect class="box ext" x="800" y="272" width="180" height="56" rx="4"/>
+            <text class="t" x="816" y="296">GitHub Action</text><text class="s" x="816" y="314">PR comment · exit 0/1</text>
+            <rect class="box ext" x="800" y="356" width="180" height="56" rx="4"/>
+            <text class="t" x="816" y="380">Judge report</text><text class="s" x="816" y="398">agreement · kappa</text>
+
+            <path class="e" d="M220 132 H276" marker-end="url(#ag-a1)"/>
+            <path class="e" d="M370 104 V60" marker-end="url(#ag-a1)"/>
+            <path class="e" d="M420 56 V100" marker-end="url(#ag-a1)"/>
+            <text class="el" x="430" y="72">output + $</text>
+            <path class="e" d="M645 104 V60" marker-end="url(#ag-a1)"/>
+            <path class="e" d="M395 160 V184" marker-end="url(#ag-a1)"/>
+            <path class="e" d="M510 210 H520 V140 H526" marker-end="url(#ag-a1)"/>
+            <path class="e" d="M395 244 V268" marker-end="url(#ag-a1)"/>
+            <path class="e" d="M220 300 H276" marker-end="url(#ag-a1)"/>
+            <path class="e hot" d="M510 300 H526" marker-end="url(#ag-a1)"/>
+            <path class="e" d="M645 272 V248" marker-end="url(#ag-a1)"/>
+            <path class="e" d="M760 216 H796" marker-end="url(#ag-a1)"/>
+            <path class="e hot" d="M760 300 H796" marker-end="url(#ag-a1)"/>
+            <path class="e" d="M220 384 H276" marker-end="url(#ag-a1)"/>
+            <path class="e dash" d="M510 384 H796" marker-end="url(#ag-a1)"/>
+          </svg>
+        </div>
+        <figcaption><span class="label">Fig. 1</span><span class="dg-hint">scroll →</span> How it fits together. There is no agent graph: every model call is a single structured-output request, so each one can be cached, capped and logged.</figcaption>
+      </figure>
+
+      <section class="body">
+        <h2>Catching a regression that looks like a win</h2>
+        <p>The demo is a Banking77 intent classifier: a small FastAPI app that sends each customer message to Claude Haiku and gets back one of 77 labels. Version 2 of its prompt is a “simplification”. It is shorter, and it cuts cost per item almost in half. A reviewer skimming the diff would likely approve it.</p>
+        <p>Both versions ran live on the same 300-utterance test sample. The gate also ran v1 against a re-run of itself, to check it stays quiet when nothing changed.</p>
+        <div class="table-scroll">
+          <table class="metrics-t">
+            <thead><tr><th>Comparison</th><th class="num">Δ accuracy</th><th class="num">Accuracy</th><th class="num">Lost / gained</th><th class="num">$ / item</th><th class="num">p95 ms</th></tr></thead>
+            <tbody>
+              <tr><td>v1 re-run vs v1 · <b>pass</b></td><td class="num">−0.7 pt<span class="ci">[−2.3, +1.0]</span></td><td class="num">0.857 → 0.850</td><td class="num">4 / 2<span class="ci">p = 0.69</span></td><td class="num">unchanged</td><td class="num">1,148 → 1,051</td></tr>
+              <tr class="win"><td>v2 “simplified prompt” vs v1 · <b>fail</b></td><td class="num bad">−6.0 pt<span class="ci">[−10.0, −2.0]</span></td><td class="num">0.857 → 0.797</td><td class="num">28 / 10<span class="ci">p = 0.005</span></td><td class="num">×0.52</td><td class="num">1,148 → 1,071</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="muted small">Banking77 (CC BY 4.0), seeded 300-utterance test sample, live API runs committed to the repo. Intervals are 95% paired bootstrap; p is McNemar’s exact test on items lost vs gained. Cost per item: $0.000061 for v1 and its re-run, $0.000032 for v2. On the dev split (154 utterances) the same change showed −9.1 pt [−14.3, −3.9]. The three demo runs cost $0.046 in total.</p>
+        <p>The whole interval for v2 sits below zero, so the gate fails the build. Cost and latency pass, because neither got confidently worse. This is the summary the Action posts on the pull request:</p>
+<pre><code><span class="c">### assaygate: FAILED</span>
+<span class="c">candidate-v2 vs baseline-v1 · 300 paired items · 95% bootstrap CIs</span>
+
+accuracy           0.857 → 0.797   <span class="hi">-0.060 [-0.100, -0.020]  FAIL</span>
+                   28 items lost, 10 gained (McNemar p=0.0051)
+cost_per_item_usd  $0.00006 → $0.00003   x0.52 [x0.51, x0.53]  pass
+latency_p95_ms     1,148 → 1,071 ms      x0.93 [x0.86, x1.09]  pass</code></pre>
+      </section>
+
+      <figure class="figure-wide">
+        <a class="dg-frame" href="https://github.com/bprakashputta/assaygate" style="display:block;padding:0;overflow:hidden;cursor:pointer"><img src="../assets/assaygate/gate.png" alt="assaygate gate report in dark theme: gate failed, 1 of 3 checks. Accuracy 0.797, down 0.060 with CI from −0.100 to −0.020; cost per item ×0.52 and p95 latency ×0.93 both pass. Cumulative curves of latency and cost per item for baseline and candidate." width="1120" height="1240" loading="lazy" style="max-height:none"></a>
+        <figcaption><span class="label">Fig. 2</span>The HTML gate report for v2 vs v1. Accuracy fails; the cost curve shows why a reviewer might have liked the change. Click to see the code.</figcaption>
+      </figure>
+
+      <section class="body">
+        <h2>How the gate <em>decides</em></h2>
+        <p>The key choice is to compare items in pairs. Some utterances are hard for every prompt and some are easy. Looking at the per-item difference removes that variation, so the remaining noise is only what the change itself did.</p>
+        <p>On the unchanged re-run, the paired 95% interval is −2.3 to +1.0 points. An unpaired bootstrap of the same two runs gives −6.3 to +5.0: 3.4 times wider, and wide enough to hide the real −6.0 point regression. A unit test simulates 40 re-runs of an unchanged, non-deterministic system and allows at most 3 false alarms.</p>
+      </section>
+
+      <figure class="figure-wide">
+        <div class="dg-frame">
+          <svg class="dg" viewBox="0 0 1000 300" role="img" aria-labelledby="ag-gate-t">
+            <title id="ag-gate-t">Gate decision pipeline. Pair baseline and candidate items by id, compute per-item differences, bootstrap a confidence interval, run McNemar and permutation tests, then decide. Cost and p95 latency take a parallel path with paired bootstrap ratio intervals. The decision becomes exit code 0 or 1.</title>
+            <defs><marker id="ag-a2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0,1 L9,5 L0,9 z"/></marker></defs>
+            <rect class="box" x="10" y="30" width="164" height="92" rx="4"/>
+            <text class="n" x="24" y="52">01</text><text class="t" x="24" y="74">Pair by id</text><text class="s" x="24" y="96">baseline ↔</text><text class="s" x="24" y="111">candidate</text>
+            <rect class="box" x="214" y="30" width="164" height="92" rx="4"/>
+            <text class="n" x="228" y="52">02</text><text class="t" x="228" y="74">Differences</text><text class="s" x="228" y="96">Δ per item</text><text class="s" x="228" y="111">errors score 0</text>
+            <rect class="box" x="418" y="30" width="164" height="92" rx="4"/>
+            <text class="n" x="432" y="52">03</text><text class="t" x="432" y="74">Bootstrap CI</text><text class="s" x="432" y="96">10,000 resamples</text><text class="s" x="432" y="111">seeded</text>
+            <rect class="box" x="622" y="30" width="164" height="92" rx="4"/>
+            <text class="n" x="636" y="52">04</text><text class="t" x="636" y="74">Tests</text><text class="s" x="636" y="96">McNemar (0/1)</text><text class="s" x="636" y="111">sign-flip perm.</text>
+            <rect class="box hot" x="826" y="30" width="164" height="92" rx="4"/>
+            <text class="n" x="840" y="52">05</text><text class="t" x="840" y="74">Decide</text><text class="s" x="840" y="96">fail if CI high</text><text class="s" x="840" y="111">&lt; −max_drop</text>
+            <path class="e" d="M174 76 H210" marker-end="url(#ag-a2)"/>
+            <path class="e" d="M378 76 H414" marker-end="url(#ag-a2)"/>
+            <path class="e" d="M582 76 H618" marker-end="url(#ag-a2)"/>
+            <path class="e" d="M786 76 H822" marker-end="url(#ag-a2)"/>
+
+            <rect class="box ext" x="214" y="166" width="572" height="56" rx="4"/>
+            <text class="t" x="230" y="190" style="font-size:13px">Cost per item and p95 latency</text>
+            <text class="s" x="230" y="208">paired bootstrap ratio CI · fail if low end &gt; 1 + max_increase</text>
+            <path class="e dash" d="M92 122 V194 H210" marker-end="url(#ag-a2)"/>
+            <path class="e dash" d="M786 194 H860 V126" marker-end="url(#ag-a2)"/>
+
+            <path class="e hot" d="M950 122 V246" marker-end="url(#ag-a2)"/>
+            <rect class="box hot" x="770" y="250" width="220" height="40" rx="20"/>
+            <text class="s" x="880" y="275" text-anchor="middle" style="fill:var(--ink)">exit 0 pass · exit 1 fail</text>
+            <text class="el" x="756" y="274" text-anchor="end">Markdown · JSON · HTML</text>
+                      </svg>
+        </div>
+        <figcaption><span class="label">Fig. 3</span><span class="dg-hint">scroll →</span> The gate for one comparison. Quality fails only when the whole interval is worse than the allowed margin; cost and latency use ratios so one threshold works for a 40 ms service and a 4 s one.</figcaption>
+      </figure>
+
+      <section class="body">
+        <h2>Can the judge be trusted?</h2>
+        <p>Many suites score open-ended answers with an LLM judge. A judge that disagrees with people makes the whole gate meaningless, so assaygate measures it first. Each judging technique is a switch. Every variant judges every pair in both orders. The data is split by question: choices were made on 24 dev questions, and the 56 test questions were run once.</p>
+        <p>The data is the MT-Bench human judgments: 3,355 expert votes turned into 1,814 pairs with a majority label (214 pairs without a majority were dropped). The test sample is 400 pairs (168 A, 153 B, 79 tie). The judge is Claude Haiku 5.5 with thinking off.</p>
+      </section>
+
+      <div class="figure-wide tbl table-scroll">
+        <table class="metrics-t">
+          <thead><tr><th>Judge (Haiku 5.5, N = 400)</th><th class="num">Agreement</th><th class="num">Kappa</th><th class="num">Non-tie</th><th class="num">Ties</th><th class="num">Flips</th><th class="num">Longer</th><th class="num">$ / pair*</th></tr></thead>
+          <tbody>
+            <tr><td>1 naive</td><td class="num">72.8%<span class="ci">[68.2, 76.9]</span></td><td class="num">0.551<span class="ci">[0.485, 0.618]</span></td><td class="num">86.5%</td><td class="num">4.8%</td><td class="num">11.0%</td><td class="num">68.9%</td><td class="num">$0.00028</td></tr>
+            <tr><td>2 +rubric</td><td class="num">72.2%</td><td class="num">0.542</td><td class="num">86.2%</td><td class="num">4.5%</td><td class="num">11.0%</td><td class="num">69.9%</td><td class="num">$0.00035</td></tr>
+            <tr><td>3 +CoT field</td><td class="num">73.8%</td><td class="num">0.567</td><td class="num">88.3%</td><td class="num">5.2%</td><td class="num">10.3%</td><td class="num">70.7%</td><td class="num">$0.00061</td></tr>
+            <tr><td>4 +reference</td><td class="num">74.5%</td><td class="num">0.581</td><td class="num">89.5%</td><td class="num">6.5%</td><td class="num">12.7%</td><td class="num">72.1%</td><td class="num">$0.00065</td></tr>
+            <tr><td>5 +swap (conservative)</td><td class="num">75.2%</td><td class="num">0.607</td><td class="num">91.4%</td><td class="num">16.2%</td><td class="num">12.7%</td><td class="num">74.1%</td><td class="num">$0.00065</td></tr>
+            <tr class="win"><td>6 +few-shot (final)</td><td class="num">75.2%<span class="ci">[70.8, 79.2]</span></td><td class="num">0.606<span class="ci">[0.543, 0.667]</span></td><td class="num">90.1%</td><td class="num">15.8%</td><td class="num">11.5%</td><td class="num">73.1%</td><td class="num">$0.00053</td></tr>
+            <tr><td>6a average-swap policy</td><td class="num">73.5%</td><td class="num">0.570</td><td class="num">89.8%</td><td class="num">9.5%</td><td class="num">11.5%</td><td class="num">73.1%</td><td class="num">$0.00053</td></tr>
+            <tr><td>6b no swap</td><td class="num">76.0%</td><td class="num">0.608</td><td class="num">88.6%</td><td class="num">7.8%</td><td class="num">11.5%</td><td class="num">70.6%</td><td class="num">$0.00053</td></tr>
+            <tr><td>6c native thinking, no CoT field</td><td class="num">74.0%</td><td class="num">0.586</td><td class="num">91.0%</td><td class="num">15.8%</td><td class="num">11.0%</td><td class="num">73.8%</td><td class="num">$0.00043</td></tr>
+            <tr class="ref"><td>Humans (reference)</td><td class="num">64.2%<span class="ci">two experts</span></td><td class="num">–</td><td class="num">80.6%</td><td class="num">19.8%</td><td class="num">–</td><td class="num">74.0%</td><td class="num">–</td></tr>
+          </tbody>
+        </table>
+        <p class="muted small" style="max-width:var(--measure)">Data: <code>lmsys/mt_bench_human_judgments</code>, human split, CC BY 4.0. GPT-4 reference answers from FastChat (Apache-2.0) for math, reasoning and coding. Brackets are 95% CIs (Wilson for agreement, bootstrap for kappa). “Non-tie” is agreement on pairs where neither side said tie; “Longer” is how often the longer answer was picked. *Both orders are counted for every variant; a single-order judge costs half. “Flips” is how often one single call changes its verdict when the answers swap places. The human row is agreement between two individual experts; the labels are majority votes, which are less noisy, so a judge can score above it without being “better than humans”.</p>
+      </div>
+
+      <section class="body">
+        <h3>The honest result</h3>
+        <div class="table-scroll">
+          <table class="metrics-t">
+            <thead><tr><th>Slice (test)</th><th class="num">Final − naive</th><th class="num">N</th><th class="num">Agreement</th><th class="num">Kappa</th></tr></thead>
+            <tbody>
+              <tr><td>All categories · <b>not significant</b> (McNemar p = 0.24)</td><td class="num">+2.5 pt<span class="ci">[−1.2, +6.2]</span></td><td class="num">400</td><td class="num">72.8% → 75.2%</td><td class="num">0.551 → 0.606</td></tr>
+              <tr class="win"><td>Math, reasoning, coding (post hoc)</td><td class="num">+12.1 pt<span class="ci">[+5.0, +19.3]</span></td><td class="num">140</td><td class="num">64.3% → 76.4%</td><td class="num">0.450 → 0.640</td></tr>
+              <tr><td>Open-ended categories (post hoc)</td><td class="num">−2.7 pt<span class="ci">[−6.9, +1.5]</span></td><td class="num">260</td><td class="num">77.3% → 74.6%</td><td class="num">–</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout"><span class="label">Dev said +11.7. Test said +2.5.</span>On the dev split, the full technique stack looked like an 11.7-point gain. On test, run once, it was +2.5 points and not significant. Few-shot examples helped on dev and did nothing on test. That is exactly why the split exists, and the page reports the test number.</div>
+        <p>The category split is where the stack earns its keep. On verifiable tasks (math, reasoning, coding), agreement rose from 64.3% to 76.4%, and the direction matches dev (+26.9 pt on 52 pairs). On open-ended writing it did nothing. I chose this split after seeing the test results, so it should be confirmed on fresh data. The practical advice still holds: choose judge settings by task type rather than one judge for everything.</p>
+        <ul>
+          <li><b>Position bias.</b> A single judge call flips its verdict on about 11% of pairs when the two answers swap places. Judging both orders and combining them makes the final verdict independent of order. The conservative policy (orders disagree → tie) beat averaging on both splits (+4.2 pt dev, +1.7 pt test) and moved the judge’s tie rate from 4.8% to 15.8%, closer to the humans’ 19.8%.</li>
+          <li><b>Verbosity bias.</b> None found. Haiku picked the longer answer 68.9% of the time with the naive prompt; the humans did 74.0%.</li>
+          <li><b>Bigger model.</b> On the first 100 test pairs, Sonnet 5.5 cost about 20 times more per pair with no clear gain in agreement (naive 71.0% vs Haiku’s 73.0%, final 73.0% vs 69.0%; intervals about ±9 pt). Its single calls were far more stable under swapping: 3% flips vs 12%.</li>
+        </ul>
+      </section>
+
+      <figure class="figure-wide">
+        <a class="dg-frame" href="https://github.com/bprakashputta/assaygate" style="display:block;padding:0;overflow:hidden;cursor:pointer"><img src="../assets/assaygate/calibration.png" alt="assaygate judge calibration report: judge–human agreement 72.8% naive to 75.2% final on 400 MT-Bench test pairs, with a dot-and-interval chart of agreement for each judge variant." width="1120" height="1020" loading="lazy" style="max-height:none"></a>
+        <figcaption><span class="label">Fig. 4</span>The calibration report. Each row adds one technique; lines are 95% Wilson intervals, and they overlap, which is the “not significant” finding in picture form. Click to see the code.</figcaption>
+      </figure>
+
+      <section class="body">
+        <h2>Safe to run on every pull request</h2>
+        <h3>A hard spend cap under concurrency</h3>
+        <p>Before each model call, the client reserves the worst-case cost (prompt estimate plus max tokens) in a shared ledger under a lock, then settles to the real cost from the response, cache tokens included. A test with 20 concurrent calls against a tiny cap never overshoots. The whole project made 7,839 billed model calls and spent $3.16 of its $5.00 cap: $1.14 on the MT-Bench test ladder, $1.63 on the Sonnet comparison, $0.05 on the Banking77 runs, the rest on dev work and smoke tests. A sqlite cache served 2,412 of 7,200 judge calls on the test run.</p>
+        <h3>A shared API key in the real world</h3>
+        <p>The first full calibration run died on a 429: other workloads on the same organisation key had used up the concurrency limit. The client now caps in-flight calls and backs off with jitter, honouring <code>Retry-After</code>. A structured output cut off by the token limit is re-asked once with double the limit, instead of repeating the same failing request. A judge call that still fails counts as a tie and is reported (zero in the final test run) rather than crashing a 4,800-call run. Sonnet 5.5 also rejects the “thinking off” setting Haiku accepts, so that is now mapped per model, with a test.</p>
+        <h3>Quality</h3>
+        <ul>
+          <li>68 tests, all offline with a fake SDK. The statistics are checked against scipy, scikit-learn and textbook values: bootstrap percentile and BCa, permutation, McNemar, Wilson, kappa.</li>
+          <li>CI green on Python 3.12 and 3.13. A gate-demo workflow runs the Action itself: it passes the re-run and fails the regression.</li>
+          <li>One Docker image; Compose brings up the report service and the demo classifier.</li>
+          <li>Five architecture decision records, including why the gate uses paired intervals and why the client uses the Anthropic SDK directly.</li>
+        </ul>
+      </section>
+
+      <section class="body">
+        <h2>Limitations</h2>
+        <ul>
+          <li>One public judge dataset. MT-Bench is 2023-era chat answers from a small expert pool. Trusting a judge in your own domain needs your own labels; <code>assaygate calibrate</code> is built for that.</li>
+          <li>The overall judge improvement is not significant at N = 400, and the category result was chosen after seeing test.</li>
+          <li>The demo regression is a deliberately written prompt change, run live. Banking77 labels contain some noise.</li>
+          <li>Demo latency includes queueing on a shared key, so the p95 intervals are wide. No latency regression was shown; only quality failed.</li>
+          <li>One provider (Anthropic) is wired into the judge client. Installs from GitHub, not PyPI.</li>
+        </ul>
+      </section>
+
+      <section class="body">
+        <h2>Stack</h2>
+        <ul class="tags"><li>Python 3.12</li><li>uv</li><li>Claude API</li><li>Anthropic SDK</li><li>structured outputs</li><li>prompt caching</li><li>numpy</li><li>pydantic v2</li><li>Typer</li><li>FastAPI</li><li>httpx</li><li>sqlite</li><li>pytest</li><li>ruff</li><li>Docker</li><li>GitHub Actions</li></ul>
+        <h3 style="margin-top:40px">Fits more than classifiers</h3>
+        <p class="muted">The same setup gates any LLM feature with a test set: RAG answers, extraction, agents, support replies. Paired statistics so noise doesn’t block merges, and a judge you have measured before you let it decide.</p>
+        <div class="links"><a class="btn solid" href="https://www.upwork.com/freelancers/~01ba1048297cfaf8b2">Discuss a project <span class="arr">→</span></a></div>
+      </section>
+    </div>
+
+    <nav class="next" aria-label="Next case study">
+      <span class="label">Next case study</span>
+      <a class="big" href="placewise.html">Placewise: evidence-backed shortlists</a>
+      <span class="mono small">01 →</span>
+    </nav>
+  </main>
+
+  <footer class="site">
+    <div class="wrap">
+      <span>© 2026 Bhanu Prakash Putta</span>
+      <span><a href="../">Home</a> · <a href="https://github.com/bprakashputta">GitHub</a></span>
+    </div>
+  </footer>
+</body>
+</html>
