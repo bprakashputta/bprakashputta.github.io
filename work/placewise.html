@@ -68,6 +68,11 @@
       </section>
 
       <figure class="figure-wide">
+        <a class="shot" href="https://github.com/bprakashputta/placewise"><img src="../assets/placewise/dashboard.png" width="1600" height="1000" loading="lazy" alt="Placewise recruiter dashboard: counts of candidates, open job orders and shortlists to review, today's AI spend against the daily cap, a list of shortlists waiting for a decision, and a ring chart of how 568 screened résumés were classified (clean, needs cleanup, tampered)"></a>
+        <figcaption><span class="label">Fig. 1</span>The recruiter dashboard. Every file is classified before any model reads it; five résumés carried hidden instructions aimed at AI and were cleaned first. AI spend is shown against a hard daily cap.</figcaption>
+      </figure>
+
+      <figure class="figure-wide">
         <div class="dg-frame">
           <svg class="dg" viewBox="0 0 1000 410" role="img" aria-labelledby="pw-arch-t">
             <title id="pw-arch-t">Architecture: a recruiter uses the Next.js portal, which calls the FastAPI API. Résumé sources feed ingest workers running LangGraph. Both use Postgres with pgvector. Claude handles extraction, answers and scoring; Voyage AI handles embeddings and rerank; LangSmith collects traces.</title>
@@ -108,7 +113,7 @@
             <path class="e dash" d="M740 252 C770 252 770 352 796 352" marker-end="url(#pw-a1)"/>
           </svg>
         </div>
-        <figcaption><span class="label">Fig. 1</span><span class="dg-hint">scroll →</span> System architecture. Everything runs in one Docker Compose stack; the job queue is plain Postgres with <code>SKIP LOCKED</code>, so there is no separate broker to run.</figcaption>
+        <figcaption><span class="label">Fig. 2</span><span class="dg-hint">scroll →</span> System architecture. Everything runs in one Docker Compose stack; the job queue is plain Postgres with <code>SKIP LOCKED</code>, so there is no separate broker to run.</figcaption>
       </figure>
 
       <section class="body">
@@ -150,7 +155,7 @@
             <rect class="box hot" x="810" y="190" width="180" height="44" rx="22"/><text class="t" x="900" y="217" text-anchor="middle" style="font-size:13px">searchable candidate</text>
           </svg>
         </div>
-        <figcaption><span class="label">Fig. 2</span><span class="dg-hint">scroll →</span> The LangGraph ingest pipeline for one résumé. Only step 03 uses a model; the steps either side are code.</figcaption>
+        <figcaption><span class="label">Fig. 3</span><span class="dg-hint">scroll →</span> The LangGraph ingest pipeline for one résumé. Only step 03 uses a model; the steps either side are code.</figcaption>
       </figure>
 
       <section class="body">
@@ -200,7 +205,7 @@
             <text class="el" x="915" y="278" text-anchor="middle">~14 s · ~3¢</text>
           </svg>
         </div>
-        <figcaption><span class="label">Fig. 3</span><span class="dg-hint">scroll →</span> The Ask pipeline. Retrieval is hand-written SQL rather than a generic retriever, so hard filters and both searches run in one query.</figcaption>
+        <figcaption><span class="label">Fig. 4</span><span class="dg-hint">scroll →</span> The Ask pipeline. Retrieval is hand-written SQL rather than a generic retriever, so hard filters and both searches run in one query.</figcaption>
       </figure>
 
       <section class="body">
@@ -208,6 +213,11 @@
         <p>For each candidate, the model must quote the résumé line that supports each requirement. Code checks that every quote really exists, and code, not the model, computes the final score. Scoring is blind: names, addresses and graduation years are removed first.</p>
         <p class="pull">97.6% submit precision, and a recruiter can see exactly why each person made the list.</p>
       </section>
+
+      <figure class="figure-wide">
+        <a class="shot" href="https://github.com/bprakashputta/placewise"><img src="../assets/placewise/shortlist.png" width="1600" height="1000" loading="lazy" alt="A job order for a Senior Civil Project Manager: the structured role and must-have requirements on the left, and the ranked shortlist on the right, where each candidate has a code-computed score, a written summary, flags to confirm, and Approve or Reject buttons"></a>
+        <figcaption><span class="label">Fig. 5</span>A job order's shortlist. The score comes from code counting the requirements met; the model writes the summary and the flags a recruiter should confirm. Nothing is submitted until someone clicks Approve.</figcaption>
+      </figure>
 
       <section class="body">
         <h2>Production engineering</h2>
