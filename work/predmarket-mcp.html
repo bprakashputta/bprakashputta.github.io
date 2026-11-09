@@ -3,165 +3,183 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>predmarket-mcp · MCP server for prediction markets · Bhanu Prakash Putta</title>
-  <meta name="description" content="predmarket-mcp: an open-source MCP server giving AI agents live Kalshi and Polymarket data on one normalized model, built for agent traffic.">
+  <title>predmarket-mcp — Case study — Bhanu Prakash Putta</title>
+  <meta name="description" content="predmarket-mcp: an open-source MCP server giving AI agents live Kalshi and Polymarket data on one data model, built for agent traffic, with a public cross-venue board.">
+  <meta property="og:title" content="predmarket-mcp — live market data for AI agents">
+  <meta property="og:image" content="https://bprakashputta.github.io/assets/predmarket/board.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap">
   <link rel="stylesheet" href="../assets/site.css">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231f5f4a'/%3E%3Ctext x='32' y='42' font-family='Arial' font-weight='700' font-size='28' text-anchor='middle' fill='white'%3EBP%3C/text%3E%3C/svg%3E">
-  <style>
-    .diagram { width: 100%; height: auto; display: block; }
-    .diagram .box { fill: var(--surface); stroke: var(--border); stroke-width: 1.5; }
-    .diagram .hl { fill: var(--accent-soft); stroke: var(--accent); }
-    .diagram text { fill: var(--text); font: 600 15px ui-sans-serif, system-ui, sans-serif; }
-    .diagram .sub { fill: var(--muted); font-weight: 400; font-size: 13px; }
-    .diagram .line { stroke: var(--muted); stroke-width: 1.5; fill: none; marker-end: url(#arrow); }
-    .diagram-frame { background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px; padding: 14px; overflow-x: auto; }
-    .diagram-frame svg { min-width: 560px; }
-  </style>
+  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
 </head>
 <body>
-  <header class="site">
+  <header class="topbar">
     <div class="wrap">
-      <a class="brand" href="../">Bhanu Prakash Putta</a>
-      <nav>
+      <a class="brand" href="../"><b>Bhanu Prakash Putta</b><span class="hide-sm"> · AI Engineer</span></a>
+      <nav aria-label="Primary">
         <a href="../#work">Work</a>
-        <a href="../#services" class="hide-sm">Services</a>
+        <a href="../#approach" class="hide-sm">Approach</a>
         <a href="../#contact">Contact</a>
       </nav>
     </div>
   </header>
 
   <main class="wrap">
-    <p class="crumb"><a href="../#work">Work</a> / predmarket-mcp</p>
-    <div class="case-hero">
-      <p class="eyebrow">Case study · open source · Model Context Protocol</p>
-      <h1>predmarket-mcp: live prediction-market data as tools for AI agents</h1>
-      <p class="lede">Kalshi and Polymarket price thousands of real-world questions, from Fed decisions to recessions. But their APIs differ in almost every way: units, order-book conventions, search, history. This MCP server hides all of that behind six clean tools, so an agent like Claude can search, quote and compare both venues in plain language.</p>
-      <div class="actions">
-        <a class="btn primary" href="https://github.com/bprakashputta/predmarket-mcp">Code on GitHub</a>
-        <a class="btn" href="https://github.com/bprakashputta/predmarket-mcp#quick-start">Install in Claude Desktop</a>
+    <header class="case-head">
+      <p class="crumb"><a href="../#work">Work</a> / 02 / predmarket-mcp</p>
+      <h1 class="display">Live prediction markets, as <em>tools</em> an agent can use.</h1>
+      <p class="dek">Kalshi and Polymarket price thousands of real-world questions, from Fed decisions to recessions, but their APIs differ in almost every way. This open-source MCP server hides that behind six clean tools, so Claude or any agent can search, quote and compare both venues in plain language.</p>
+      <div class="links">
+        <a class="btn solid" href="https://bprakashputta.github.io/predmarket-mcp/">Open the live board <span class="arr">→</span></a>
+        <a class="btn" href="https://github.com/bprakashputta/predmarket-mcp">Code on GitHub</a>
+        <a class="btn" href="https://github.com/bprakashputta/predmarket-mcp#quick-start">Install in Claude</a>
       </div>
+    </header>
+
+    <div class="numbers">
+      <div><b>6</b><span>read-only agent tools</span></div>
+      <div><b>2</b><span>venues on one data model</span></div>
+      <div><b>10<span class="to">→</span>0.3 s</b><span>cold cross-venue search</span></div>
+      <div><b>12</b><span>look-alike rules, each with a regression test</span></div>
     </div>
 
-    <div class="metrics">
-      <div class="metric"><b>6</b><span>read-only tools</span></div>
-      <div class="metric"><b>2</b><span>venues, one data model</span></div>
-      <div class="metric"><b>0</b><span>API keys needed</span></div>
-      <div class="metric"><b>~0.3 s</b><span>cross-venue search, 0 rate-limit errors</span></div>
+    <div class="case">
+      <aside class="meta" aria-label="Project facts">
+        <dl>
+          <dt>Role</dt><dd>Author and maintainer</dd>
+          <dt>Year</dt><dd>2026</dd>
+          <dt>License</dt><dd>MIT, open source</dd>
+          <dt>Runs in</dt><dd>Claude Desktop, Claude Code, any MCP client</dd>
+          <dt>Stack</dt><dd>Python 3.12, MCP SDK, asyncio, httpx, pydantic</dd>
+        </dl>
+      </aside>
+
+      <section class="body first">
+        <h2>The idea</h2>
+        <p>An agent asked “what are the odds of a US recession in 2027?” should answer with real prices, not a guess. Prediction markets have those prices, but an agent can't use them without learning two very different APIs. The server gives it six tools and one vocabulary: every price is a YES probability between 0 and 1.</p>
+        <div class="table-scroll">
+          <table>
+            <thead><tr><th>Tool</th><th>What the agent gets</th></tr></thead>
+            <tbody>
+              <tr><td><code>search_markets</code></td><td>Open markets for a query, alternating venues so neither crowds out the other</td></tr>
+              <tr><td><code>get_market</code></td><td>Bid, ask, mid, last, volume and close time for one market</td></tr>
+              <tr><td><code>get_orderbook</code></td><td>YES bids and asks, best first, with the spread</td></tr>
+              <tr><td><code>get_recent_trades</code></td><td>Latest fills, all as YES prices</td></tr>
+              <tr><td><code>get_price_history</code></td><td>Hourly or daily points with a first, last, min and max summary</td></tr>
+              <tr><td><code>compare_venues</code></td><td>Markets that ask the same question on both venues, ranked by price gap</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <figure class="figure-wide">
+        <div class="dg-frame">
+          <svg class="dg" viewBox="0 0 1000 330" role="img" aria-labelledby="pm-arch-t">
+            <title id="pm-arch-t">An MCP client talks over stdio to predmarket-mcp. Inside, a tools layer, search and matching, and two venue adapters share one HTTP layer with rate limiting, retries, caching and request de-duplication, which calls the Kalshi and Polymarket public APIs.</title>
+            <defs><marker id="pm-a1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0,1 L9,5 L0,9 z"/></marker></defs>
+            <rect class="box ext" x="330" y="10" width="340" height="56" rx="4"/>
+            <text class="t" x="500" y="34" text-anchor="middle">MCP client</text>
+            <text class="s" x="500" y="53" text-anchor="middle">Claude Desktop · Claude Code · your agent</text>
+            <path class="e" d="M500 66 V98" marker-end="url(#pm-a1)"/>
+            <text class="el" x="512" y="88">stdio · JSON-RPC</text>
+            <rect class="box soft" x="60" y="102" width="880" height="148" rx="6"/>
+            <text class="g" x="80" y="126">predmarket-mcp</text>
+            <rect class="box" x="80" y="138" width="260" height="46" rx="4"/>
+            <text class="t" x="96" y="158" style="font-size:13px">6 tools</text><text class="s" x="96" y="175">input clamping · interleaving</text>
+            <rect class="box hot" x="370" y="138" width="260" height="46" rx="4"/>
+            <text class="t" x="386" y="158" style="font-size:13px">Search + matching</text><text class="s" x="386" y="175">term checks · weighted overlap</text>
+            <rect class="box" x="660" y="138" width="260" height="46" rx="4"/>
+            <text class="t" x="676" y="158" style="font-size:13px">Venue adapters</text><text class="s" x="676" y="175">normalize to YES probability</text>
+            <rect class="box" x="80" y="196" width="840" height="40" rx="4"/>
+            <text class="s" x="500" y="221" text-anchor="middle" style="fill:var(--ink)">HTTP layer · even request spacing · retry + Retry-After · TTL cache · in-flight de-dupe</text>
+            <path class="e" d="M300 250 V282" marker-end="url(#pm-a1)"/>
+            <path class="e" d="M700 250 V282" marker-end="url(#pm-a1)"/>
+            <rect class="box ext" x="160" y="286" width="280" height="40" rx="4"/>
+            <text class="t" x="300" y="311" text-anchor="middle" style="font-size:13px">Kalshi Trade API · public</text>
+            <rect class="box ext" x="560" y="286" width="280" height="40" rx="4"/>
+            <text class="t" x="700" y="311" text-anchor="middle" style="font-size:13px">Polymarket Gamma · CLOB · Data</text>
+          </svg>
+        </div>
+        <figcaption><span class="label">Fig. 1</span><span class="dg-hint">scroll →</span> How it fits together. Both venue adapters share one HTTP layer built for bursty agent traffic.</figcaption>
+      </figure>
+
+      <section class="body">
+        <h2>Four problems worth solving</h2>
+        <h3><span class="n mono" style="color:var(--signal-ink)">01</span>&nbsp; Two venues, one language</h3>
+        <p>Kalshi quotes dollars as strings and keeps separate YES and NO books; Polymarket uses token IDs per outcome and JSON-encoded arrays. A Kalshi NO bid at <i>p</i> becomes a YES ask at 1 − <i>p</i>, and a Polymarket fill on the NO token is converted the same way. Volume keeps its native unit (contracts or USD) and is always labeled, never mixed.</p>
+
+        <h3><span class="n mono" style="color:var(--signal-ink)">02</span>&nbsp; Search where the API has none</h3>
+        <p>Kalshi's documented API has no keyword search. The first version paged through every open event (50+ requests) into an inverted index: a cold search took about 10 seconds and could trip the rate limit. The server now uses the public search endpoint behind kalshi.com's own search box, one request in about 0.3 seconds, and falls back to the index automatically if that undocumented endpoint ever changes.</p>
+
+        <h3><span class="n mono" style="color:var(--signal-ink)">03</span>&nbsp; Built for agent traffic</h3>
+        <p>Agents call tools in bursts and often repeat themselves. Requests are spaced evenly per venue instead of burst-then-backoff; 429s and 5xx retry with backoff and honor <code>Retry-After</code>; and a TTL cache collapses identical in-flight requests into one upstream call. A 15-topic comparison sweep makes 30 upstream requests with zero rate-limit errors.</p>
+
+        <h3><span class="n mono" style="color:var(--signal-ink)">04</span>&nbsp; Matching that doesn't fall for look-alikes</h3>
+        <p>Two markets can share most of their words and still be different bets. The first version paired a Kalshi “Fed funds above 3.50%” market with a Polymarket “3.0%” market and reported a 98-point gap, which would badly mislead an agent. Now every pair must pass twelve checks built from real title pairs, each with a regression test. A few of them:</p>
+        <div class="table-scroll">
+          <table>
+            <thead><tr><th>Check</th><th>Look-alike it rejects</th></tr></thead>
+            <tbody>
+              <tr><td>Same thresholds</td><td>“above 3.50%” vs “3.0%”</td></tr>
+              <tr><td>Same comparison</td><td>“above 3.75%” vs “exactly 3.75%”</td></tr>
+              <tr><td>Close vs touch</td><td>“Bitcoin above $150k on Dec 31” vs “Bitcoin reaches $150k in 2026”</td></tr>
+              <tr><td>Same direction</td><td>“cut by 25bps” vs “increase by 25 bps”</td></tr>
+              <tr><td>Same negation</td><td>“Fed cuts 1 time” vs “no Fed cuts”</td></tr>
+              <tr><td>Same date</td><td>“Ethereum above $2,200 on Nov 13” vs “… on November 9”</td></tr>
+              <tr><td>Same place</td><td>“GDP growth in 2026” (US) vs “UK annual GDP growth in 2026”</td></tr>
+              <tr><td>Same stage</td><td>“become the next Justice” vs “the next Supreme Court nominee”</td></tr>
+              <tr><td>Same scope</td><td>“cut rates before 2027” vs “emergency rate cut before 2027”</td></tr>
+              <tr><td>Shared action, not just names</td><td>“Who will dissent at the FOMC? (Powell)” vs “Powell out from the Fed Board”</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Pairs that pass are scored by word overlap weighted by rarity, so “Fed” and “2026” count less than “dissent” or “shutdown”. Close dates must be within 45 days (tighter for markets closing within two weeks), and pairs are matched one-to-one. Genuine pairs now line up closely, as they should:</p>
+<pre><code><span class="c"># compare_venues(“fed hike”) · live, Nov 2026</span>
+gap <span class="hi">-0.020</span>  Kalshi  exactly 1 Fed rate hike in 2026?
+              Poly    1 Fed rate hike in 2026?
+gap <span class="hi">-0.004</span>  Kalshi  exactly 3 Fed rate hikes in 2026?
+              Poly    3 Fed rate hikes in 2026?
+gap <span class="hi"> 0.000</span>  Kalshi  hike by 25bps in December?
+              Poly    increase by 25 bps in December?</code></pre>
+        <div class="callout"><span class="label">A gap is not an arbitrage</span>Kalshi's 2027 recession market resolves on an NBER call, for example, while Polymarket's has its own rules and cut-off. The server's instructions tell the agent to check resolution rules before treating any gap as an opportunity.</div>
+      </section>
+
+      <section class="body">
+        <h2>The live board</h2>
+        <p>To show the matcher working on real data, a GitHub Actions job runs the same code every six hours against both venues and publishes a static board: every matched pair as a dumbbell on one probability axis, seven days of history for each leg, and the look-alikes the matcher refused, with the reason. Most topics find no true pair on a given day, and the board says so rather than padding the list.</p>
+      </section>
+
+      <figure class="figure-wide">
+        <a class="dg-frame" href="https://bprakashputta.github.io/predmarket-mcp/" style="display:block;padding:0;overflow:hidden;cursor:pointer"><img src="../assets/predmarket/board.png" alt="The predmarket-mcp cross-venue board: matched markets with Kalshi and Polymarket prices on one axis" style="max-height:none"></a>
+        <figcaption><span class="label">Fig. 2</span>The cross-venue board, rebuilt from live public data every six hours. Click to open it.</figcaption>
+      </figure>
+
+      <section class="body">
+        <h2>Quality</h2>
+        <ul>
+          <li>Tests with mocked HTTP (respx) for parsing, unit conversion, order-book sorting, retries, caching, search fallback and matching regressions from real title pairs. No network needed.</li>
+          <li>Tested end to end over the real MCP protocol: launch over stdio, list the tools, call them against live data.</li>
+          <li>GitHub Actions CI on Python 3.12 and 3.13, with ruff lint and format checks.</li>
+          <li>Every tool is marked read-only, and inputs are clamped to safe ranges.</li>
+        </ul>
+        <h3 style="margin-top:40px">Need agents connected to your data?</h3>
+        <p class="muted">The same approach works for internal databases, CRMs, ticketing systems or any API: a small, well-tested MCP server that gives agents exactly the tools they need, safely.</p>
+        <div class="links"><a class="btn solid" href="https://www.upwork.com/freelancers/~01ba1048297cfaf8b2">Discuss a project <span class="arr">→</span></a></div>
+      </section>
     </div>
 
-    <section>
-      <h2>How it fits together</h2>
-      <div class="diagram-frame">
-        <svg class="diagram" viewBox="0 0 760 330" role="img" aria-label="An MCP client talks over stdio to predmarket-mcp, which has a tools layer, matching and search, and a shared HTTP layer, calling Kalshi and Polymarket public APIs">
-          <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="currentColor" style="color: var(--muted)"/></marker></defs>
-          <rect class="box" x="230" y="10" width="300" height="52" rx="10"/>
-          <text x="380" y="34" text-anchor="middle">MCP client</text>
-          <text class="sub" x="380" y="52" text-anchor="middle">Claude Desktop · Claude Code · your agent</text>
-          <path class="line" d="M380 62 V92"/>
-          <text class="sub" x="392" y="82">stdio · JSON-RPC</text>
-          <rect class="box hl" x="60" y="96" width="640" height="150" rx="12"/>
-          <text x="80" y="120">predmarket-mcp</text>
-          <rect class="box" x="80" y="132" width="190" height="46" rx="8"/>
-          <text x="175" y="152" text-anchor="middle">6 tools</text>
-          <text class="sub" x="175" y="169" text-anchor="middle">validation · interleaving</text>
-          <rect class="box" x="285" y="132" width="190" height="46" rx="8"/>
-          <text x="380" y="152" text-anchor="middle">Search + matching</text>
-          <text class="sub" x="380" y="169" text-anchor="middle">term checks · overlap</text>
-          <rect class="box" x="490" y="132" width="190" height="46" rx="8"/>
-          <text x="585" y="152" text-anchor="middle">Venue adapters</text>
-          <text class="sub" x="585" y="169" text-anchor="middle">normalize to YES prob.</text>
-          <rect class="box" x="80" y="190" width="600" height="42" rx="8"/>
-          <text x="380" y="216" text-anchor="middle">HTTP layer: rate limit · retry + Retry-After · TTL cache · request de-dupe</text>
-          <path class="line" d="M250 246 V280"/>
-          <path class="line" d="M510 246 V280"/>
-          <rect class="box" x="120" y="284" width="260" height="40" rx="10"/>
-          <text x="250" y="309" text-anchor="middle">Kalshi Trade API (public)</text>
-          <rect class="box" x="400" y="284" width="260" height="40" rx="10"/>
-          <text x="530" y="309" text-anchor="middle">Polymarket Gamma · CLOB · Data</text>
-        </svg>
-      </div>
-    </section>
-
-    <section>
-      <h2>The tools</h2>
-      <div class="table-scroll">
-        <table>
-          <thead><tr><th>Tool</th><th>What the agent gets</th></tr></thead>
-          <tbody>
-            <tr><td><code>search_markets</code></td><td>Open markets for a keyword query, alternating between venues so neither crowds out the other</td></tr>
-            <tr><td><code>get_market</code></td><td>Quote and details for one market: bid, ask, mid, last, volume, close time</td></tr>
-            <tr><td><code>get_orderbook</code></td><td>YES bids and asks, best first, and the spread</td></tr>
-            <tr><td><code>get_recent_trades</code></td><td>Latest fills, all expressed as YES prices</td></tr>
-            <tr><td><code>get_price_history</code></td><td>Hourly or daily price points with a min/max/first/last summary</td></tr>
-            <tr><td><code>compare_venues</code></td><td>Markets that look like the same question on both venues, ranked by price gap</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
-
-    <section>
-      <h2>Engineering problems worth solving</h2>
-      <h3>1. Two venues, one language</h3>
-      <p>Kalshi quotes dollars as strings and keeps separate YES and NO books; Polymarket uses token IDs per outcome and JSON-encoded arrays. Every price leaves the server as a YES probability between 0 and 1. A Kalshi NO bid at <i>p</i> becomes a YES ask at 1 − <i>p</i>, and a Polymarket fill on the NO token is converted the same way. Volume keeps its native unit (contracts vs. USD) and is always labeled, never mixed.</p>
-
-      <h3>2. Search where the API has none</h3>
-      <p>Kalshi's documented API has no keyword search. My first version paged through every open event (50+ requests) and built an inverted index, which worked but made a cold search take about 10 seconds and could trip Kalshi's rate limit. The server now uses the public search endpoint behind kalshi.com's own search box: one request, about 0.3 seconds, quotes included. Because that endpoint isn't documented, any failure falls back automatically to the index, built from documented endpoints and cached for 10 minutes.</p>
-
-      <h3>3. Built for agent traffic</h3>
-      <p>Agents call tools in bursts and often repeat themselves. Requests are spaced evenly per venue instead of burst-then-backoff; 429s and 5xx retry with exponential backoff and honor <code>Retry-After</code>; and a TTL cache collapses identical in-flight requests into one upstream call. A 15-topic comparison sweep makes 30 upstream requests with zero rate-limit errors.</p>
-
-      <h3>4. Cross-venue matching that doesn't fall for look-alikes</h3>
-      <p>Two markets can share most of their words and still be different bets. The first version paired a Kalshi "Fed funds above 3.50%" market with a Polymarket "3.0%" market and reported a 98-point "gap", which would badly mislead an agent. So before scoring, every pair must pass checks built from real title pairs, each with a regression test:</p>
-      <div class="table-scroll">
-        <table>
-          <thead><tr><th>Check</th><th>Rejected look-alike</th></tr></thead>
-          <tbody>
-            <tr><td>Same thresholds</td><td>"above 3.50%" vs "3.0%"</td></tr>
-            <tr><td>Same comparison</td><td>"above 3.75%" vs "exactly 3.75%"; "more than 25bps" vs "25 bps"</td></tr>
-            <tr><td>Close vs touch</td><td>"Bitcoin above $150k on Dec 31" vs "Bitcoin reaches $150k in 2026"</td></tr>
-            <tr><td>Same direction</td><td>"cut by 25bps" vs "increase by 25 bps"</td></tr>
-            <tr><td>Same negation</td><td>"Fed cuts 1 time" vs "no Fed cuts"</td></tr>
-            <tr><td>Shared action, not just names</td><td>"Who will dissent at the FOMC? (Powell)" vs "Powell out from the Fed Board"</td></tr>
-          </tbody>
-        </table>
-      </div>
-      <p>Pairs that pass are scored by word overlap weighted by rarity ("Fed" and "2026" count less than "dissent" or "shutdown"), checked for close dates within 45 days, and matched one-to-one. Genuine pairs now line up closely, as they should:</p>
-      <pre><code>compare_venues("fed hike")   # live, Nov 2026
-gap  -0.020  Kalshi: exactly 1 Fed rate hike in 2026?   Polymarket: 1 Fed rate hike in 2026?
-gap  -0.004  Kalshi: exactly 3 Fed rate hikes in 2026?  Polymarket: 3 Fed rate hikes in 2026?
-gap   0.000  Kalshi: hike by 25bps in December?         Polymarket: increase by 25 bps in December?</code></pre>
-      <p class="note">A gap still isn't automatically an arbitrage. Kalshi's 2027 recession market resolves on an NBER call, for example, and Polymarket's has its own rules and cut-off. The server's instructions tell the agent to check resolution rules before treating any gap as an opportunity.</p>
-    </section>
-
-    <section>
-      <h2>Quality</h2>
-      <ul class="clean">
-        <li>31 tests with mocked HTTP (respx): parsing, unit conversion, order-book sorting, retries, caching, search fallback, and matching regressions from real title pairs. No network needed.</li>
-        <li>Tested end-to-end over the real MCP protocol: launch the server over stdio, list the tools, call them against live data.</li>
-        <li>GitHub Actions CI on Python 3.12 and 3.13, with ruff lint and format checks.</li>
-        <li>Every tool is marked read-only, and inputs are clamped to safe ranges.</li>
-      </ul>
-    </section>
-
-    <section>
-      <h2>Stack</h2>
-      <ul class="tags"><li>Python 3.12</li><li>MCP SDK</li><li>asyncio</li><li>httpx</li><li>pydantic</li><li>pytest</li><li>respx</li><li>uv</li><li>GitHub Actions</li></ul>
-    </section>
-
-    <section>
-      <h2>Need your agents connected to your data?</h2>
-      <p class="section-sub">The same approach works for internal databases, CRMs, ticketing systems or any API: a small, well-tested MCP server that gives agents exactly the tools they need, safely.</p>
-      <div class="actions">
-        <a class="btn primary" href="https://www.upwork.com/freelancers/~01ba1048297cfaf8b2">Discuss a project</a>
-        <a class="btn" href="placewise.html">← Placewise case study</a>
-      </div>
-    </section>
+    <nav class="next" aria-label="Previous case study">
+      <span class="label">Previous case study</span>
+      <a class="big" href="placewise.html">Placewise: evidence-backed shortlists</a>
+      <span class="mono small">← 01</span>
+    </nav>
   </main>
 
-  <footer>
+  <footer class="site">
     <div class="wrap">
       <span>© 2026 Bhanu Prakash Putta</span>
-      <span><a href="../">Home</a></span>
+      <span><a href="../">Home</a> · <a href="https://github.com/bprakashputta">GitHub</a></span>
     </div>
   </footer>
 </body>

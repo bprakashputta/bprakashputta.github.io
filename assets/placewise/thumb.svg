@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="4 14 992 390"><rect x="0" y="0" width="1000" height="420" fill="#fdfcf8"/><style>.box{fill:#f5f2eb;stroke:#17160f;stroke-width:1.25}.box.soft{fill:none;stroke:#d9d2c3;stroke-dasharray:3 4}.box.hot{fill:#f4dccf;stroke:#c8431a}.box.ext{fill:#ece7dc;stroke:#6b665a}.t{fill:#17160f;font:600 14px Helvetica,Arial,sans-serif}.s{fill:#6b665a;font:400 11px Menlo,monospace}.g{fill:#6b665a;font:500 10.5px Menlo,monospace;letter-spacing:.06em;text-transform:uppercase}.e{fill:none;stroke:#4a463c;stroke-width:1.25}.e.dash{stroke-dasharray:4 4;stroke:#6b665a}.e.hot{stroke:#c8431a}.el{fill:#4a463c;font:400 10.5px Menlo,monospace}.ah{fill:#4a463c}</style>>
+            
+            <defs><marker id="pw-a1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0,1 L9,5 L0,9 z"/></marker></defs>
+            <text class="g" x="20" y="58">Sources</text>
+            <rect class="box ext" x="20" y="80" width="180" height="60" rx="4"/>
+            <text class="t" x="36" y="106">Recruiter / admin</text><text class="s" x="36" y="126">browser</text>
+            <rect class="box ext" x="20" y="200" width="180" height="60" rx="4"/>
+            <text class="t" x="36" y="226">Résumé sources</text><text class="s" x="36" y="246">upload · email · n8n</text>
+
+            <rect class="box soft" x="240" y="30" width="520" height="370" rx="6"/>
+            <text class="g" x="260" y="58">Placewise · Docker Compose</text>
+            <rect class="box" x="260" y="80" width="180" height="60" rx="4"/>
+            <text class="t" x="276" y="106">Web portal</text><text class="s" x="276" y="126">Next.js</text>
+            <rect class="box" x="500" y="80" width="240" height="60" rx="4"/>
+            <text class="t" x="516" y="106">API</text><text class="s" x="516" y="126">FastAPI · Ask · matching</text>
+            <rect class="box" x="540" y="200" width="200" height="60" rx="4"/>
+            <text class="t" x="556" y="226">Ingest workers</text><text class="s" x="556" y="246">LangGraph pipeline</text>
+            <rect class="box" x="260" y="320" width="480" height="64" rx="4"/>
+            <text class="t" x="276" y="346">Postgres 17 + pgvector</text><text class="s" x="276" y="366">profiles · chunks (HNSW + full-text) · job queue</text>
+
+            <text class="g" x="800" y="58">Model services</text>
+            <rect class="box hot" x="800" y="80" width="180" height="60" rx="4"/>
+            <text class="t" x="816" y="106">Anthropic Claude</text><text class="s" x="816" y="126">extract · score</text>
+            <rect class="box ext" x="800" y="200" width="180" height="60" rx="4"/>
+            <text class="t" x="816" y="226">Voyage AI</text><text class="s" x="816" y="246">embeddings · rerank</text>
+            <rect class="box ext" x="800" y="322" width="180" height="60" rx="4"/>
+            <text class="t" x="816" y="348">LangSmith</text><text class="s" x="816" y="368">traces · evals</text>
+
+            <path class="e" d="M200 110 H256" marker-end="url(#pw-a1)"/>
+            <path class="e" d="M440 110 H496" marker-end="url(#pw-a1)"/><text class="el" x="448" y="102">/api</text>
+            <path class="e" d="M200 230 H512 a8 8 0 0 1 16 0 H536" marker-end="url(#pw-a1)"/><text class="el" x="214" y="222">files → job queue</text>
+            <path class="e" d="M520 140 V316" marker-end="url(#pw-a1)"/><text class="el" x="428" y="296">read · enqueue</text>
+            <path class="e" d="M640 260 V316" marker-end="url(#pw-a1)"/><text class="el" x="648" y="296">claim job · store</text>
+            <path class="e hot" d="M740 110 H796" marker-end="url(#pw-a1)"/>
+            <path class="e hot" d="M740 215 C772 215 770 132 796 132" marker-end="url(#pw-a1)"/>
+            <path class="e" d="M740 238 H796" marker-end="url(#pw-a1)"/>
+            <path class="e dash" d="M740 252 C770 252 770 352 796 352" marker-end="url(#pw-a1)"/>
+          </svg>

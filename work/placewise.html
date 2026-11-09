@@ -3,142 +3,249 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Placewise · AI recruiting layer · Bhanu Prakash Putta</title>
-  <meta name="description" content="Placewise: an AI layer for A/E/C recruiting. LangGraph ingest, Claude structured extraction, hybrid retrieval with rerank, and evidence-checked candidate matching.">
+  <title>Placewise — Case study — Bhanu Prakash Putta</title>
+  <meta name="description" content="Placewise: an AI layer for A/E/C recruiting. LangGraph ingest, Claude structured extraction validated by code, filtered hybrid retrieval with rerank, and evidence-checked candidate matching.">
+  <meta property="og:title" content="Placewise — evidence-backed candidate shortlists">
+  <meta property="og:image" content="https://bprakashputta.github.io/assets/og.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap">
   <link rel="stylesheet" href="../assets/site.css">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231f5f4a'/%3E%3Ctext x='32' y='42' font-family='Arial' font-weight='700' font-size='28' text-anchor='middle' fill='white'%3EBP%3C/text%3E%3C/svg%3E">
+  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
 </head>
 <body>
-  <header class="site">
+  <header class="topbar">
     <div class="wrap">
-      <a class="brand" href="../">Bhanu Prakash Putta</a>
-      <nav>
+      <a class="brand" href="../"><b>Bhanu Prakash Putta</b><span class="hide-sm"> · AI Engineer</span></a>
+      <nav aria-label="Primary">
         <a href="../#work">Work</a>
-        <a href="../#services" class="hide-sm">Services</a>
+        <a href="../#approach" class="hide-sm">Approach</a>
         <a href="../#contact">Contact</a>
       </nav>
     </div>
   </header>
 
   <main class="wrap">
-    <p class="crumb"><a href="../#work">Work</a> / Placewise</p>
-    <div class="case-hero">
-      <p class="eyebrow">Case study · AI recruiting</p>
-      <h1>Placewise: an AI layer that turns résumés into evidence-backed shortlists</h1>
-      <p class="lede">Recruiters at architecture, engineering and construction staffing firms spend hours reading résumés against vague job notes. Placewise sits on top of their existing ATS and does the first pass: it parses every résumé, finds the right candidates for a role, and backs every recommendation with the résumé line that proves it.</p>
-      <div class="actions">
-        <a class="btn primary" href="https://github.com/bprakashputta/placewise">Code on GitHub</a>
-        <a class="btn" href="https://placewise.bprakashputta.workers.dev">Live demo (login on request)</a>
+    <header class="case-head">
+      <p class="crumb"><a href="../#work">Work</a> / 01 / Placewise</p>
+      <h1 class="display">Résumés in, <em>evidence-backed</em> shortlists out.</h1>
+      <p class="dek">Recruiters at architecture, engineering and construction staffing firms spend hours reading résumés against vague job notes. Placewise sits on top of their existing ATS and does the first pass: it reads every résumé, finds the right people for a role, and backs each recommendation with the résumé line that proves it.</p>
+      <div class="links">
+        <a class="btn solid" href="https://github.com/bprakashputta/placewise">Code on GitHub <span class="arr">→</span></a>
+        <a class="btn" href="https://placewise.bprakashputta.workers.dev">Live demo · login on request</a>
       </div>
+    </header>
+
+    <div class="numbers">
+      <div><b>48<span class="to">→</span>89%</b><span>recall@10</span></div>
+      <div><b>98%</b><span>precision@10</span></div>
+      <div><b>97.6%</b><span>submit precision</span></div>
+      <div><b>$0.02</b><span>LLM cost per résumé</span></div>
+      <div><b>~300</b><span>automated tests</span></div>
     </div>
 
-    <div class="metrics">
-      <div class="metric"><b>48% → 89%</b><span>recall@10</span></div>
-      <div class="metric"><b>98%</b><span>precision@10</span></div>
-      <div class="metric"><b>97.6%</b><span>submit precision</span></div>
-      <div class="metric"><b>$0.02</b><span>per résumé ingested</span></div>
-      <div class="metric"><b>~300</b><span>automated tests</span></div>
+    <div class="case">
+      <aside class="meta" aria-label="Project facts">
+        <dl>
+          <dt>Role</dt><dd>Design, build and deployment, end to end</dd>
+          <dt>Year</dt><dd>2026</dd>
+          <dt>Status</dt><dd>Deployed on Google Cloud with CI/CD</dd>
+          <dt>Evaluated on</dt><dd>597 résumés, 15 job orders</dd>
+          <dt>Stack</dt><dd>LangGraph, Claude, Voyage AI, Postgres + pgvector, FastAPI, Next.js, n8n</dd>
+        </dl>
+      </aside>
+
+      <section class="body first">
+        <h2>What it does</h2>
+        <ul>
+          <li><b>Intake.</b> PDF, DOCX and text résumés arrive from an upload page, a watched folder or an n8n webhook, and wait in a Postgres job queue.</li>
+          <li><b>Understanding.</b> A LangGraph pipeline per résumé dedupes, parses and screens the file, has Claude extract a structured profile, then validates it in code.</li>
+          <li><b>Job orders.</b> Messy recruiter notes become a structured job order, and the system asks clarifying questions when something is missing.</li>
+          <li><b>Matching.</b> Hard filters (license, state, years) plus hybrid search and rerank find candidates, and each one is scored with quoted evidence.</li>
+          <li><b>Ask.</b> A conversational assistant answers questions about candidates and roles, citing résumé lines.</li>
+          <li><b>Human in control.</b> Shortlists go through approve or reject. Nothing is sent automatically.</li>
+        </ul>
+      </section>
+
+      <figure class="figure-wide">
+        <div class="dg-frame">
+          <svg class="dg" viewBox="0 0 1000 410" role="img" aria-labelledby="pw-arch-t">
+            <title id="pw-arch-t">Architecture: a recruiter uses the Next.js portal, which calls the FastAPI API. Résumé sources feed ingest workers running LangGraph. Both use Postgres with pgvector. Claude handles extraction, answers and scoring; Voyage AI handles embeddings and rerank; LangSmith collects traces.</title>
+            <defs><marker id="pw-a1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0,1 L9,5 L0,9 z"/></marker></defs>
+            <text class="g" x="20" y="58">Sources</text>
+            <rect class="box ext" x="20" y="80" width="180" height="60" rx="4"/>
+            <text class="t" x="36" y="106">Recruiter / admin</text><text class="s" x="36" y="126">browser</text>
+            <rect class="box ext" x="20" y="200" width="180" height="60" rx="4"/>
+            <text class="t" x="36" y="226">Résumé sources</text><text class="s" x="36" y="246">upload · email · n8n</text>
+
+            <rect class="box soft" x="240" y="30" width="520" height="370" rx="6"/>
+            <text class="g" x="260" y="58">Placewise · Docker Compose</text>
+            <rect class="box" x="260" y="80" width="180" height="60" rx="4"/>
+            <text class="t" x="276" y="106">Web portal</text><text class="s" x="276" y="126">Next.js</text>
+            <rect class="box" x="500" y="80" width="240" height="60" rx="4"/>
+            <text class="t" x="516" y="106">API</text><text class="s" x="516" y="126">FastAPI · Ask · matching</text>
+            <rect class="box" x="540" y="200" width="200" height="60" rx="4"/>
+            <text class="t" x="556" y="226">Ingest workers</text><text class="s" x="556" y="246">LangGraph pipeline</text>
+            <rect class="box" x="260" y="320" width="480" height="64" rx="4"/>
+            <text class="t" x="276" y="346">Postgres 17 + pgvector</text><text class="s" x="276" y="366">profiles · chunks (HNSW + full-text) · job queue</text>
+
+            <text class="g" x="800" y="58">Model services</text>
+            <rect class="box hot" x="800" y="80" width="180" height="60" rx="4"/>
+            <text class="t" x="816" y="106">Anthropic Claude</text><text class="s" x="816" y="126">extract · score</text>
+            <rect class="box ext" x="800" y="200" width="180" height="60" rx="4"/>
+            <text class="t" x="816" y="226">Voyage AI</text><text class="s" x="816" y="246">embeddings · rerank</text>
+            <rect class="box ext" x="800" y="322" width="180" height="60" rx="4"/>
+            <text class="t" x="816" y="348">LangSmith</text><text class="s" x="816" y="368">traces · evals</text>
+
+            <path class="e" d="M200 110 H256" marker-end="url(#pw-a1)"/>
+            <path class="e" d="M440 110 H496" marker-end="url(#pw-a1)"/><text class="el" x="448" y="102">/api</text>
+            <path class="e" d="M200 230 H512 a8 8 0 0 1 16 0 H536" marker-end="url(#pw-a1)"/><text class="el" x="214" y="222">files → job queue</text>
+            <path class="e" d="M520 140 V316" marker-end="url(#pw-a1)"/><text class="el" x="428" y="296">read · enqueue</text>
+            <path class="e" d="M640 260 V316" marker-end="url(#pw-a1)"/><text class="el" x="648" y="296">claim job · store</text>
+            <path class="e hot" d="M740 110 H796" marker-end="url(#pw-a1)"/>
+            <path class="e hot" d="M740 215 C772 215 770 132 796 132" marker-end="url(#pw-a1)"/>
+            <path class="e" d="M740 238 H796" marker-end="url(#pw-a1)"/>
+            <path class="e dash" d="M740 252 C770 252 770 352 796 352" marker-end="url(#pw-a1)"/>
+          </svg>
+        </div>
+        <figcaption><span class="label">Fig. 1</span><span class="dg-hint">scroll →</span> System architecture. Everything runs in one Docker Compose stack; the job queue is plain Postgres with <code>SKIP LOCKED</code>, so there is no separate broker to run.</figcaption>
+      </figure>
+
+      <section class="body">
+        <h2>Ingest: treat every file as untrusted</h2>
+        <p>Real résumé folders are full of scans, two-column layouts, duplicates, corrupt files and occasionally hidden text written to manipulate an AI screener. The ingest graph screens each file before any model sees it, and never takes the model's word for a fact.</p>
+        <ul>
+          <li>Hidden and injected text is detected and stripped in a plain-code step that takes about 30 ms.</li>
+          <li>Claude returns a structured profile with evidence quotes, then <b>code validates the facts</b>: each quote must exist in the résumé, and years of experience are computed from the dates.</li>
+          <li>Extraction is cached on the cleaned text, model and prompt, so reprocessing a file costs nothing.</li>
+          <li>Every model call is logged with tokens, latency and cost. A daily spend cap pauses work instead of failing it.</li>
+        </ul>
+        <p>On the evaluation set, unusable and adversarial files were caught with <b>100% precision and recall</b>. Moving extraction from a small model to Claude Sonnet raised precision on flawed résumés from 57% to 94%, at about two cents per résumé.</p>
+      </section>
+
+      <figure class="figure-wide">
+        <div class="dg-frame">
+          <svg class="dg" viewBox="0 0 1000 262" role="img" aria-labelledby="pw-ing-t">
+            <title id="pw-ing-t">Ingest pipeline for one résumé: receive, parse and screen, extract with Claude, validate in code, embed and store. Duplicates and unusable files exit early.</title>
+            <defs><marker id="pw-a2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0,1 L9,5 L0,9 z"/></marker></defs>
+            <rect class="box" x="10" y="30" width="160" height="92" rx="4"/>
+            <text class="n" x="24" y="52">01</text><text class="t" x="24" y="74">Receive</text><text class="s" x="24" y="96">hash file</text><text class="s" x="24" y="111">dedupe</text>
+            <rect class="box" x="210" y="30" width="160" height="92" rx="4"/>
+            <text class="n" x="224" y="52">02</text><text class="t" x="224" y="74">Parse + screen</text><text class="s" x="224" y="96">PDF · DOCX · TXT</text><text class="s" x="224" y="111">hidden text · no AI</text>
+            <rect class="box hot" x="410" y="30" width="160" height="92" rx="4"/>
+            <text class="n" x="424" y="52">03</text><text class="t" x="424" y="74">Extract</text><text class="s" x="424" y="96">Claude Sonnet</text><text class="s" x="424" y="111">profile + quotes</text>
+            <rect class="box" x="610" y="30" width="160" height="92" rx="4"/>
+            <text class="n" x="624" y="52">04</text><text class="t" x="624" y="74">Validate</text><text class="s" x="624" y="96">quotes must exist</text><text class="s" x="624" y="111">years from dates</text>
+            <rect class="box" x="810" y="30" width="180" height="92" rx="4"/>
+            <text class="n" x="824" y="52">05</text><text class="t" x="824" y="74">Embed + store</text><text class="s" x="824" y="96">Voyage chunks</text><text class="s" x="824" y="111">one DB transaction</text>
+            <path class="e" d="M170 76 H206" marker-end="url(#pw-a2)"/>
+            <path class="e" d="M370 76 H406" marker-end="url(#pw-a2)"/>
+            <path class="e" d="M570 76 H606" marker-end="url(#pw-a2)"/>
+            <path class="e" d="M770 76 H806" marker-end="url(#pw-a2)"/>
+            <path class="e dash" d="M90 122 V186" marker-end="url(#pw-a2)"/>
+            <path class="e dash" d="M290 122 V186" marker-end="url(#pw-a2)"/>
+            <path class="e" d="M900 122 V186" marker-end="url(#pw-a2)"/>
+            <rect class="box ext" x="10" y="190" width="160" height="44" rx="22"/><text class="s" x="90" y="217" text-anchor="middle">duplicate</text>
+            <rect class="box ext" x="210" y="190" width="160" height="44" rx="22"/><text class="s" x="290" y="217" text-anchor="middle">needs attention</text>
+            <rect class="box hot" x="810" y="190" width="180" height="44" rx="22"/><text class="t" x="900" y="217" text-anchor="middle" style="font-size:13px">searchable candidate</text>
+          </svg>
+        </div>
+        <figcaption><span class="label">Fig. 2</span><span class="dg-hint">scroll →</span> The LangGraph ingest pipeline for one résumé. Only step 03 uses a model; the steps either side are code.</figcaption>
+      </figure>
+
+      <section class="body">
+        <h2>Retrieval: from 48% to 89% recall</h2>
+        <p>Pure vector search missed most qualified candidates, because requirements like “PE licensed in Texas, 10+ years” are hard constraints, not semantic similarity. Each layer stayed only because the evaluation showed it helped.</p>
+        <div class="table-scroll">
+          <table class="metrics-t">
+            <thead><tr><th>Retrieval setup</th><th class="num">recall@10</th><th class="num">precision@10</th><th class="num">MRR</th></tr></thead>
+            <tbody>
+              <tr><td><span class="bar" style="width:48px"></span>Vector search only</td><td class="num">48%</td><td class="num">–</td><td class="num">–</td></tr>
+              <tr><td><span class="bar" style="width:84px"></span>+ hard filters</td><td class="num">84%</td><td class="num">–</td><td class="num">–</td></tr>
+              <tr class="win"><td><span class="bar" style="width:89px"></span>+ hybrid keyword search + rerank</td><td class="num">89%</td><td class="num">98%</td><td class="num">1.00</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="muted small">Measured against an answer key the API never sees: 597 résumés and 15 job orders, including scanned, corrupt, duplicate and prompt-injection files.</p>
+      </section>
+
+      <figure class="figure-wide">
+        <div class="dg-frame">
+          <svg class="dg" viewBox="0 0 1000 300" role="img" aria-labelledby="pw-rag-t">
+            <title id="pw-rag-t">Ask pipeline: a recruiter question is understood by Claude Haiku into a query and hard filters, retrieved with filters, vector and keyword search fused by reciprocal rank fusion, reranked by Voyage, answered by Claude Sonnet, and every citation is checked in code.</title>
+            <defs><marker id="pw-a3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0,1 L9,5 L0,9 z"/></marker></defs>
+            <rect class="box ext" x="10" y="40" width="160" height="76" rx="4"/>
+            <text class="t" x="24" y="66">Question</text><text class="s" x="24" y="88">“Texas PEs in DFW,</text><text class="s" x="24" y="103">drainage, 8+ yrs”</text>
+            <rect class="box" x="210" y="40" width="150" height="76" rx="4"/>
+            <text class="t" x="224" y="66">Understand</text><text class="s" x="224" y="88">Claude Haiku</text><text class="s" x="224" y="103">query + filters</text>
+            <rect class="box soft" x="400" y="16" width="210" height="268" rx="6"/>
+            <text class="g" x="414" y="38">Retrieve · own SQL</text>
+            <rect class="box" x="414" y="52" width="182" height="46" rx="4"/><text class="t" x="428" y="72" style="font-size:13px">Hard filters</text><text class="s" x="428" y="89">license · metro · years</text>
+            <rect class="box" x="414" y="108" width="182" height="46" rx="4"/><text class="t" x="428" y="128" style="font-size:13px">Vector search</text><text class="s" x="428" y="145">pgvector HNSW</text>
+            <rect class="box" x="414" y="164" width="182" height="46" rx="4"/><text class="t" x="428" y="184" style="font-size:13px">Keyword search</text><text class="s" x="428" y="201">Postgres full-text</text>
+            <rect class="box hot" x="414" y="222" width="182" height="46" rx="4"/><text class="t" x="428" y="242" style="font-size:13px">Rank fusion</text><text class="s" x="428" y="259">RRF, k = 60</text>
+            <path class="e" d="M505 98 V105" marker-end="url(#pw-a3)"/><path class="e" d="M596 131 H604 V245 H600" /><path class="e" d="M596 187 H604"/><path class="e" d="M604 245 H599" marker-end="url(#pw-a3)"/>
+            <rect class="box" x="650" y="40" width="150" height="76" rx="4"/>
+            <text class="t" x="664" y="66">Rerank</text><text class="s" x="664" y="88">Voyage rerank</text><text class="s" x="664" y="103">top 50 → 30</text>
+            <rect class="box hot" x="840" y="40" width="150" height="76" rx="4"/>
+            <text class="t" x="854" y="66">Answer</text><text class="s" x="854" y="88">Claude Sonnet</text><text class="s" x="854" y="103">verified facts only</text>
+            <rect class="box" x="840" y="160" width="150" height="76" rx="4"/>
+            <text class="t" x="854" y="186">Citation check</text><text class="s" x="854" y="208">code: each quote</text><text class="s" x="854" y="223">must exist</text>
+            <path class="e" d="M170 78 H206" marker-end="url(#pw-a3)"/>
+            <path class="e" d="M360 78 H396" marker-end="url(#pw-a3)"/>
+            <path class="e" d="M610 78 H646" marker-end="url(#pw-a3)"/>
+            <path class="e" d="M800 78 H836" marker-end="url(#pw-a3)"/>
+            <path class="e" d="M915 116 V156" marker-end="url(#pw-a3)"/>
+            <text class="el" x="915" y="262" text-anchor="middle">answer + citations</text>
+            <text class="el" x="915" y="278" text-anchor="middle">~14 s · ~3¢</text>
+          </svg>
+        </div>
+        <figcaption><span class="label">Fig. 3</span><span class="dg-hint">scroll →</span> The Ask pipeline. Retrieval is hand-written SQL rather than a generic retriever, so hard filters and both searches run in one query.</figcaption>
+      </figure>
+
+      <section class="body">
+        <h2>Matching you can audit</h2>
+        <p>For each candidate, the model must quote the résumé line that supports each requirement. Code checks that every quote really exists, and code, not the model, computes the final score. Scoring is blind: names, addresses and graduation years are removed first.</p>
+        <p class="pull">97.6% submit precision, and a recruiter can see exactly why each person made the list.</p>
+      </section>
+
+      <section class="body">
+        <h2>Production engineering</h2>
+        <h3>Deployment</h3>
+        <ul>
+          <li>Google Cloud VM running the Docker Compose stack behind Caddy and Cloudflare.</li>
+          <li>GitHub Actions: CI on every pull request, auto-deploy from <code>main</code>, health check, automatic rollback.</li>
+          <li>Uptime and budget alerts, and a hard spend cap on model calls.</li>
+        </ul>
+        <h3>Cost and quality controls</h3>
+        <ul>
+          <li>Prompt caching plus a Postgres response cache, so repeat questions cost nothing.</li>
+          <li>LangSmith tracing and versioned prompts.</li>
+          <li>21 architecture decision records, one per trade-off.</li>
+        </ul>
+        <div class="callout"><span class="label">From the decision log</span>Code validates LLM facts (ADR 013). Own retrieval SQL instead of a generic retriever (ADR 017). A Postgres <code>SKIP LOCKED</code> queue instead of a broker (ADR 010). Auto-deploy with rollback (ADR 020). Claude cost caching (ADR 021).</div>
+      </section>
+
+      <section class="body">
+        <h2>Stack</h2>
+        <ul class="tags"><li>Python</li><li>LangGraph</li><li>LangChain</li><li>LangSmith</li><li>Claude</li><li>Voyage AI</li><li>Postgres</li><li>pgvector</li><li>FastAPI</li><li>Next.js</li><li>n8n</li><li>Docker</li><li>GitHub Actions</li><li>Google Cloud</li><li>Cloudflare</li></ul>
+        <h3 style="margin-top:40px">Fits more than recruiting</h3>
+        <p class="muted">The same pattern (untrusted documents in, validated structured data, filtered hybrid retrieval, evidence-backed answers) fits contracts, support tickets, claims, research papers and more.</p>
+        <div class="links"><a class="btn solid" href="https://www.upwork.com/freelancers/~01ba1048297cfaf8b2">Discuss a project <span class="arr">→</span></a></div>
+      </section>
     </div>
 
-    <section>
-      <h2>What it does</h2>
-      <ul class="clean">
-        <li><b>Intake:</b> PDF, DOCX and text résumés from an upload page, a watched folder or an n8n webhook, handled by a Postgres job queue and workers.</li>
-        <li><b>Understanding:</b> a LangGraph pipeline per résumé (dedupe → parse and screen → Claude structured extraction → code validation → embeddings).</li>
-        <li><b>Job orders:</b> messy recruiter notes become a structured job order, and the system asks clarifying questions when something is missing.</li>
-        <li><b>Matching:</b> hard filters (license, state, years) plus hybrid search and reranking find candidates, and each one is scored with quoted evidence.</li>
-        <li><b>Ask:</b> a conversational assistant answers questions about candidates and roles, and every answer cites résumé lines.</li>
-        <li><b>Human in control:</b> shortlists go through approve/reject. Nothing is ever sent automatically.</li>
-      </ul>
-      <figure>
-        <a class="frame" href="../assets/placewise/architecture.svg" title="Open full size"><img src="../assets/placewise/architecture.svg" alt="Placewise architecture: Next.js portal, FastAPI API, worker with Postgres job queue, Postgres with pgvector, n8n, Claude and Voyage AI"></a>
-        <figcaption>System architecture (click to open full size). Everything runs in Docker Compose: portal, API, workers, Postgres + pgvector and n8n.</figcaption>
-      </figure>
-    </section>
-
-    <section>
-      <h2>Ingest: making messy résumés trustworthy</h2>
-      <p>Real résumé folders are full of scans, two-column layouts, duplicates, corrupt files and occasionally hidden text written to manipulate an AI screener. The ingest graph treats every file as untrusted:</p>
-      <ul class="clean">
-        <li>Hidden and injected text is detected and stripped before any model sees it.</li>
-        <li>Claude returns a structured profile, then <b>code validates the facts</b> (dates, years of experience, license claims) instead of trusting the model.</li>
-        <li>Extraction results are cached on the cleaned text, so re-processing a file costs nothing.</li>
-        <li>Every model call is logged with tokens, latency and cost. A daily spend cap pauses work rather than failing it.</li>
-      </ul>
-      <figure>
-        <a class="frame" href="../assets/placewise/ingest-graph.svg" title="Open full size"><img src="../assets/placewise/ingest-graph.svg" alt="LangGraph ingest pipeline: dedupe, parse and screen, extract, validate, embed"></a>
-        <figcaption>The LangGraph ingest pipeline for one résumé.</figcaption>
-      </figure>
-      <p>On the evaluation set, unusable and adversarial files were caught at <b>100% precision and recall</b>, and flawed-résumé precision rose from 57% to 94% after moving extraction from a small model to Claude Sonnet, at about $0.02 per résumé.</p>
-    </section>
-
-    <section>
-      <h2>Retrieval: from 48% to 89% recall</h2>
-      <p>Pure vector search missed most qualified candidates, because job requirements like "PE licensed in Texas, 10+ years" are hard constraints, not semantic similarity. Each layer was added only when the evaluation showed it helped:</p>
-      <div class="table-scroll">
-        <table>
-          <thead><tr><th>Retrieval setup</th><th class="num">recall@10</th><th class="num">precision@10</th><th class="num">MRR</th></tr></thead>
-          <tbody>
-            <tr><td>Vector search only</td><td class="num">48%</td><td class="num">–</td><td class="num">–</td></tr>
-            <tr><td>+ hard filters</td><td class="num">84%</td><td class="num">–</td><td class="num">–</td></tr>
-            <tr><td>+ hybrid keyword search + rerank</td><td class="num"><b>89%</b></td><td class="num"><b>98%</b></td><td class="num"><b>1.00</b></td></tr>
-          </tbody>
-        </table>
-      </div>
-      <p>Measured against an answer key the API never sees, on a 597-résumé test set with 15 job orders, including scanned, corrupt, duplicate and prompt-injection files.</p>
-      <figure>
-        <a class="frame" href="../assets/placewise/rag-graph.svg" title="Open full size"><img src="../assets/placewise/rag-graph.svg" alt="RAG graph: route the question, retrieve with filters and hybrid search, rerank, answer with citations"></a>
-        <figcaption>The Ask (RAG) graph: route, retrieve, rerank, then answer with citations.</figcaption>
-      </figure>
-    </section>
-
-    <section>
-      <h2>Matching you can audit</h2>
-      <p>For each candidate, the model must quote the résumé line that supports each requirement. Code checks that every quote really exists in the résumé, and code (not the model) computes the final score. Scoring is blind: names, addresses and graduation years are removed first. Result: <b>97.6% submit precision</b>, and a recruiter can see exactly why each person made the list.</p>
-    </section>
-
-    <section>
-      <h2>Production engineering</h2>
-      <div class="grid-2">
-        <div>
-          <h3>Deployment</h3>
-          <ul class="clean">
-            <li>Google Cloud VM running the Docker Compose stack behind Caddy and Cloudflare</li>
-            <li>GitHub Actions: CI on every PR, auto-deploy from <code>main</code>, verify and roll back automatically</li>
-            <li>Uptime and budget alerts, and a public spend cap</li>
-          </ul>
-        </div>
-        <div>
-          <h3>Cost and quality controls</h3>
-          <ul class="clean">
-            <li>Prompt caching and a Postgres response cache (repeat questions cost $0)</li>
-            <li>LangSmith tracing and versioned prompts</li>
-            <li>21 architecture decision records documenting each trade-off</li>
-          </ul>
-        </div>
-      </div>
-      <p class="note">Some of the decisions recorded in the repo: code validates LLM facts (ADR 013); own retrieval SQL instead of a generic retriever (ADR 017); a Postgres <code>SKIP LOCKED</code> job queue instead of a separate broker (ADR 010); auto-deploy with rollback (ADR 020); Claude cost caching (ADR 021).</p>
-    </section>
-
-    <section>
-      <h2>Stack</h2>
-      <ul class="tags"><li>Python</li><li>LangGraph</li><li>LangChain</li><li>LangSmith</li><li>Claude</li><li>Voyage AI</li><li>Postgres</li><li>pgvector</li><li>FastAPI</li><li>Next.js</li><li>n8n</li><li>Docker</li><li>GitHub Actions</li><li>Google Cloud</li><li>Cloudflare</li></ul>
-    </section>
-
-    <section>
-      <h2>Want something like this for your data?</h2>
-      <p class="section-sub">The same pattern (untrusted documents in, validated structured data, filtered hybrid retrieval, evidence-backed answers) fits contracts, support tickets, research papers and more.</p>
-      <div class="actions">
-        <a class="btn primary" href="https://www.upwork.com/freelancers/~01ba1048297cfaf8b2">Discuss a project</a>
-        <a class="btn" href="predmarket-mcp.html">Next case study →</a>
-      </div>
-    </section>
+    <nav class="next" aria-label="Next case study">
+      <span class="label">Next case study</span>
+      <a class="big" href="predmarket-mcp.html">predmarket-mcp: live market data for AI agents</a>
+      <span class="mono small">02 →</span>
+    </nav>
   </main>
 
-  <footer>
+  <footer class="site">
     <div class="wrap">
       <span>© 2026 Bhanu Prakash Putta</span>
-      <span><a href="../">Home</a></span>
+      <span><a href="../">Home</a> · <a href="https://github.com/bprakashputta">GitHub</a></span>
     </div>
   </footer>
 </body>
