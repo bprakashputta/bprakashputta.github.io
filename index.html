@@ -3,9 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Bhanu Prakash Putta — AI Engineer</title>
-  <meta name="description" content="AI engineer building LLM agents, RAG systems and document AI that hold up on real data, with the evaluation to prove it. Lead AI Engineer at Effulgent.">
-  <meta property="og:title" content="Bhanu Prakash Putta — AI Engineer">
+  <title>Bhanu Prakash Putta — AI Engineer & Trader</title>
+  <meta name="description" content="AI engineer and trader building LLM agents, RAG systems and autonomous trading agents that hold up on real data, with the evaluation to prove it.">
+  <meta property="og:title" content="Bhanu Prakash Putta — AI Engineer & Trader">
   <meta property="og:description" content="LLM agents, RAG and document AI, measured and deployed.">
   <meta property="og:type" content="website">
   <meta property="og:image" content="https://bprakashputta.github.io/assets/og.png">
@@ -18,9 +18,10 @@
 <body>
   <header class="topbar">
     <div class="wrap">
-      <a class="brand" href="./"><b>Bhanu Prakash Putta</b><span class="hide-sm"> · AI Engineer</span></a>
+      <a class="brand" href="./"><b>Bhanu Prakash Putta</b><span class="hide-sm"> · AI Engineer &amp; Trader</span></a>
       <nav aria-label="Primary">
         <a href="#work">Work</a>
+        <a href="#trading" class="hide-sm">Trading</a>
         <a href="#approach" class="hide-sm">Approach</a>
         <a href="#experience" class="hide-sm">Experience</a>
         <a href="resume.pdf" target="_blank" rel="noopener">Resume</a>
@@ -36,7 +37,7 @@
       <h1 class="display rise d1">I build AI systems that hold up on <em>real</em> data, and I measure them to prove it.</h1>
       <div class="hero-grid">
         <div class="rise d2">
-          <p class="hero-lede">LLM agents, RAG and document AI, taken from prototype to production with evaluation sets, cost controls and a deploy that rolls back. Delivered through <a href="https://www.effulgenttech.com">Effulgent</a>.</p>
+          <p class="hero-lede">LLM agents, RAG and document AI, taken from prototype to production with evaluation sets, cost controls and a deploy that rolls back. I bring the same rigor to markets: I founded a systematic trading firm, trade futures myself, and build the agents and data systems that automate it.</p>
           <div class="links">
             <a class="btn solid" href="#work">See the work <span class="arr">→</span></a>
             <a class="btn" href="resume.pdf" target="_blank" rel="noopener">Download résumé</a>
@@ -46,6 +47,7 @@
         </div>
         <dl class="hero-meta rise d3">
           <div><dt>Focus</dt><dd>Agents · RAG · Evals</dd></div>
+          <div><dt>Markets</dt><dd>Futures · Equities · Prediction markets</dd></div>
           <div><dt>Stack</dt><dd>LangGraph · Claude · OpenAI · MCP</dd></div>
           <div><dt>Shipping</dt><dd>6+ years of Python</dd></div>
           <div><dt>Education</dt><dd>M.S. Applied Data Science</dd></div>
@@ -57,7 +59,7 @@
     <div class="wrap">
       <div class="proof" aria-label="Selected results">
         <div><b>48<span class="to">→</span>89%</b><span>retrieval recall after filters, hybrid search and rerank</span></div>
-        <div><b>97.6%</b><span>precision on evidence-checked candidate matches</span></div>
+        <div><b>2.0+</b><span>Sharpe, walk-forward validated across 8+ systematic strategies</span></div>
         <div><b>60<span class="to">→</span>90%</b><span>LLM-judge agreement with human reviewers</span></div>
         <div><b>40M+</b><span>market-data messages per hour, real-time platform</span></div>
       </div>
@@ -179,10 +181,46 @@
       </div>
     </section>
 
+    <section class="section" id="trading" style="padding-top:0">
+      <div class="wrap">
+        <div class="section-head">
+          <span class="label">02 — Trading</span>
+          <div>
+            <h2>I also trade, and I build the systems that do it.</h2>
+            <p>I founded BQR Capital to research systematic strategies, I trade NQ and ES futures myself, and I engineer the agents and market-data infrastructure that automate it. That work now continues at Effulgent.</p>
+          </div>
+        </div>
+        <div class="principles">
+          <div>
+            <span class="n">i.</span>
+            <h3>Systematic research</h3>
+            <p>At BQR Capital: XGBoost, Random Forest, LSTM and Transformer models on leakage-safe features, walk-forward validated across 8+ strategies. Sharpe 2.0+ with drawdowns capped at 12%, and 60–70% out-of-sample directional accuracy in live trading.</p>
+          </div>
+          <div>
+            <span class="n">ii.</span>
+            <h3>Autonomous agents</h3>
+            <p>An NQ/ES futures agent that reads real-time data, runs its models and executes in under a second, with position limits, anomaly checks and a kill switch in deterministic code. Now equity and futures agents with live dashboards tracking performance and drift.</p>
+          </div>
+          <div>
+            <span class="n">iii.</span>
+            <h3>Discretionary futures</h3>
+            <p>I trade NQ and ES on short-timeframe momentum, reading volume profile, order flow, VWAP and the initial balance. I'm turning that read into a system that pairs profile levels with live order-flow confirmation.</p>
+          </div>
+        </div>
+        <div class="offer-head"><span class="label">Markets and data</span><span></span></div>
+        <div class="offer">
+          <div><h3>Prediction markets</h3><p>A Kafka backbone unifying Polymarket and Kalshi at 40M+ messages an hour, and <a href="work/predmarket-mcp.html">predmarket-mcp</a>, which gives agents both venues on one data model.</p></div>
+          <div><h3>Trading knowledge RAG</h3><p>Hybrid retrieval over 100+ trading transcripts and books so agents ground decisions in documented methodology: 96% recall@1, p50 latency 221 ms.</p></div>
+          <div><h3>Futures and equities</h3><p>Real-time NQ/ES data exposed to agents through MCP tools; agent portfolios across equities and futures, monitored live.</p></div>
+          <div><h3>Competitions</h3><p>WorldQuant BRAIN Silver status; #865 globally in the IQC 2025 alpha contest; an IMC Prosperity 2025 market-making entry.</p></div>
+        </div>
+      </div>
+    </section>
+
     <section class="section" id="approach" style="padding-top:0">
       <div class="wrap">
         <div class="section-head">
-          <span class="label">02 — Approach</span>
+          <span class="label">03 — Approach</span>
           <div>
             <h2>How I work.</h2>
             <p>A demo that works on five examples is easy. These habits get it to work on the five-thousandth.</p>
@@ -218,13 +256,13 @@
     <section class="section" id="experience" style="padding-top:0">
       <div class="wrap">
         <div class="section-head">
-          <span class="label">03 — Experience</span>
+          <span class="label">04 — Experience</span>
           <div><h2>Where the work happened.</h2></div>
         </div>
         <div class="timeline">
-          <div class="row"><span class="yr">Jun 2026 — now</span><div class="role"><b>AI/ML Engineer</b><span>Effulgent Inc. · Dallas, TX</span></div><p>Built and run Placewise, a LangGraph/Claude résumé-screening pipeline (recall@10 48% → 89%, evidence-checked verdicts); a hybrid RAG over 107 trading-course transcripts (96% recall@1); autonomous trading agents and multi-agent automation.</p></div>
+          <div class="row"><span class="yr">Jun 2026 — now</span><div class="role"><b>AI/ML Engineer</b><span>Effulgent Inc. · Dallas, TX</span></div><p>Autonomous AI trading agents for equities and futures with live monitoring; a hybrid RAG over 107 trading-course transcripts (96% recall@1); Placewise, a LangGraph/Claude screening pipeline (recall@10 48% → 89%); multi-agent automation.</p></div>
           <div class="row"><span class="yr">Jun 2026 — Jul 2026</span><div class="role"><b>Software Engineer (Client Engagement)</b><span>Zeviq Technologies · Remote</span></div><p>Shipped an autonomous NQ/ES futures trading agent that ingests real-time data, runs ML models and executes in under a second, with MCP servers exposing market data and signals as tools and risk controls kept in deterministic code.</p></div>
-          <div class="row"><span class="yr">Jun 2025 — May 2026</span><div class="role"><b>Quantitative Researcher</b><span>BQR Capital · Remote</span></div><p>Financial time-series models (XGBoost, Random Forest, LSTM, Transformers) with walk-forward validation and leakage-safe feature pipelines across 8+ strategies; FastAPI and WebSocket services for model serving.</p></div>
+          <div class="row"><span class="yr">Jun 2025 — May 2026</span><div class="role"><b>Founder &amp; Quantitative Researcher</b><span>BQR Capital · Remote</span></div><p>Founded a systematic trading firm. Financial time-series models (XGBoost, Random Forest, LSTM, Transformers) with walk-forward validation across 8+ strategies, Sharpe 2.0+ with drawdowns capped at 12%; FastAPI and WebSocket services for model serving.</p></div>
           <div class="row"><span class="yr">Feb 2025 — Feb 2026</span><div class="role"><b>Founding Software Engineer</b><span>Elastics AI · Remote</span></div><p>Real-time backbone unifying Polymarket and Kalshi feeds at 40M+ messages an hour (Kafka, Protobuf, WebSockets); MCP servers giving agents live market data; MVP and 3 microservices shipped on Azure with Terraform.</p></div>
           <div class="row"><span class="yr">Jun 2024 — Aug 2024</span><div class="role"><b>AI Engineer</b><span>Reality AI Lab · Remote</span></div><p>Production RAG pipeline on LangChain, LlamaIndex and Vertex AI, and an LLM-as-judge framework that raised agreement with human reviewers from 60% to 90%.</p></div>
           <div class="row"><span class="yr">Oct 2023 — May 2025</span><div class="role"><b>Graduate Research Assistant</b><span>Clarkson University · Potsdam, NY</span></div><p>Legal-document extraction pipeline and a custom spaCy NER model at 92% accuracy on 500+ documents; published research on edge AI for smart manufacturing.</p></div>
@@ -239,7 +277,7 @@
     <section class="contact" id="contact">
       <div class="wrap">
         <div class="inner">
-        <span class="label">04 — Contact</span>
+        <span class="label">05 — Contact</span>
         <h2 class="display" style="margin-top:24px">Have something that needs to work on real data?</h2>
         <p class="hero-lede" style="margin-top:28px">Tell me what you're trying to build. I'll suggest the simplest approach that works, and how we'd measure it.</p>
         <div class="links">
